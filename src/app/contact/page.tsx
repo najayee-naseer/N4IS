@@ -1,0 +1,4 @@
+import type { Metadata } from "next";
+import { ContactForm } from "@/components/contact-form";
+export const metadata: Metadata = { title: "Contact", description: "Start a conversation with N4IS." };
+export default function ContactPage() { return <main id="main-content" className="page contact-page"><section className="contact-hero"><p className="eyebrow">N4IS / CONTACT</p><h1>HAVE AN IDEA?<br /><em>LET&apos;S BUILD IT.</em></h1><p>Bring a question, an early concept, or a problem worth exploring.</p></section><section className="contact-layout"><ContactForm /><aside><p className="eyebrow">N4IS</p><h2>A personal technology studio.</h2><p>Contact and social destinations will appear here when they are ready to be shared.</p><div className="contact-orbit" aria-hidden="true"><i /><i /><i /></div></aside></section></main>; }

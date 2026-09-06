@@ -1,0 +1,1 @@
+export function VisualPlaceholder({ label, number, variant = "project" }: { label: string; number: string; variant?: "project" | "lab" }) { return <div className={`visual-placeholder ${variant}`} aria-label={`${label} visual coming soon`} role="img"><span>{number}</span><i /><b>{label}</b><em>VISUAL SYSTEM / IN DEVELOPMENT</em></div>; }

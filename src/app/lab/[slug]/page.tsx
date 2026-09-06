@@ -1,0 +1,8 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { experiments, getExperiment } from "@/data/experiments";
+import { VisualPlaceholder } from "@/components/ui/visual-placeholder";
+export function generateStaticParams() { return experiments.map(({ slug }) => ({ slug })); }
+export function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { return params.then(({ slug }) => { const experiment = getExperiment(slug); return { title: experiment?.title ?? "Lab experiment", description: experiment?.description }; }); }
+export default async function LabDetail({ params }: { params: Promise<{ slug: string }> }) { const experiment = getExperiment((await params).slug); if (!experiment) notFound(); return <main id="main-content" className="page detail-page lab-detail"><Link className="back-link" href="/lab">← N4IS LAB</Link><header className="detail-hero"><div><p className="eyebrow">EXPERIMENT {experiment.number} / {experiment.status}</p><h1>{experiment.title}</h1><p>{experiment.description}</p></div><VisualPlaceholder variant="lab" label={experiment.title} number={experiment.number} /></header><dl className="detail-facts"><div><dt>CATEGORY</dt><dd>{experiment.category}</dd></div><div><dt>STATUS</dt><dd>{experiment.status}</dd></div><div><dt>DATE</dt><dd>{experiment.date}</dd></div><div><dt>TECHNOLOGY</dt><dd>{experiment.technologies.join(" / ")}</dd></div></dl><section className="narrative">{experiment.content.map((item) => <article key={item.label}><p className="eyebrow">{item.label}</p><h2>{item.title}</h2><p>{item.body}</p></article>)}</section></main>; }
