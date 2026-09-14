@@ -1,26 +1,50 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { projects } from "@/data/projects";
-import { ProjectVisual } from "@/components/projects/project-visual";
+import { StudioBackdrop } from "@/components/3d/studio-backdrop";
+import { PageHero } from "@/components/ui/page-hero";
+import { Reveal } from "@/components/ui/reveal";
+import { ProjectPanel } from "@/components/projects/project-panel";
+import { CtaBand } from "@/components/sections/cta-band";
+import { activeProjects } from "@/data/projects";
 
-export const metadata: Metadata = { title: "Work", description: "A selection of projects currently being developed at N4IS." };
+export const metadata: Metadata = {
+  title: "Work",
+  description: "Projects currently being built at N4IS — things we build, experiment with, and bring to life.",
+  alternates: { canonical: "/projects" },
+};
 
-export default function ProjectsPage() {
-  const activeProjects = projects.filter((project) => project.active);
+export default function WorkPage() {
+  return (
+    <main id="main-content" className="page work-page">
+      <StudioBackdrop fixed variant="ambient" markers={["N4IS / Work", `${activeProjects.length} Active`]} />
 
-  return <main id="main-content" className="page work-page">
-    <section className="work-intro" aria-labelledby="work-title">
-      <p className="eyebrow">PROJECTS</p><h1 id="work-title">WORK</h1>
-      <div><p>Things we build, experiment with, and bring to life.</p><p>A selection of projects currently being developed at N4IS.</p></div>
-    </section>
-    <section className="work-grid" aria-label="Active N4IS projects">
-      {activeProjects.map((project) => <article className="work-card" key={project.slug}>
-        <div className="work-card-header"><span>PROJECT {project.number}</span><span className="work-status"><i /> {project.status}</span></div>
-        <ProjectVisual project={project} />
-        <p className="eyebrow">{project.category}</p><h2>{project.name}</h2><p className="work-description">{project.shortDescription}</p>
-        <footer><div className="tag-row">{project.technologies.map((technology) => <span key={technology}>{technology}</span>)}</div><Link href={`/projects/${project.slug}`}>VIEW PROJECT <span>↗</span></Link><b className="work-card-number">{project.number}</b></footer>
-      </article>)}
-    </section>
-    <section className="work-cta"><p className="eyebrow">HAVE AN IDEA?</p><h2>LET&apos;S BUILD SOMETHING MEANINGFUL.</h2><Link href="/contact">GET IN TOUCH <span>↗</span></Link></section>
-  </main>;
+      <div className="shell" style={{ position: "relative", zIndex: 1 }}>
+        <PageHero
+          label="Projects"
+          title="Work"
+          lead="Things we build, experiment with, and bring to life."
+          support="A curated archive of the projects currently in active development at N4IS. Each one is shown at its real stage — no finished claims before the work is finished."
+        >
+          <Reveal className="work-index" variant="fade" delay={200}>
+            {activeProjects.map((project) => (
+              <span key={project.slug}>
+                <b>{project.number}</b>
+                <i className={project.preserveCase ? "no-caps" : undefined}>{project.name}</i>
+                <em>{project.status}</em>
+              </span>
+            ))}
+          </Reveal>
+        </PageHero>
+
+        <div className="work-panels section section--tight">
+          {activeProjects.map((project, index) => (
+            <Reveal key={project.slug} delay={index * 70}>
+              <ProjectPanel project={project} lead={Boolean(project.heroImage)} index={index} />
+            </Reveal>
+          ))}
+        </div>
+      </div>
+
+      <CtaBand />
+    </main>
+  );
 }

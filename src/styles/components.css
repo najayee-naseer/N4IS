@@ -1,0 +1,744 @@
+/* ============================================================
+   COMPONENTS — actions, meta, cards, visuals, forms, backdrop
+   Every surface is white or very light. Depth comes from
+   shadow, glass, light and geometry — never from dark fills.
+   ============================================================ */
+
+/* --- actions -------------------------------------------------- */
+.btn {
+  position: relative;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.95rem 1.45rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  transition: color var(--t) var(--ease), border-color var(--t) var(--ease), transform var(--t) var(--ease),
+    background var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+.btn > * { position: relative; z-index: 1; }
+.btn__arrow { transition: transform var(--t) var(--ease); }
+.btn:hover .btn__arrow { transform: translate(2px, -2px); }
+
+.btn--primary {
+  color: #ffffff;
+  background: var(--accent);
+  box-shadow: var(--shadow-blue);
+}
+.btn--primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--brand-gradient);
+  opacity: 0;
+  transition: opacity var(--t) var(--ease);
+}
+.btn--primary:hover { transform: translateY(-2px); box-shadow: 0 22px 48px -18px rgba(var(--accent-rgb), 0.48); }
+.btn--primary:hover::before { opacity: 1; }
+
+.btn--line {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+}
+.btn--line:hover {
+  border-color: var(--accent-line);
+  color: var(--accent);
+  background: var(--accent-tint);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--small { padding: 0.62rem 1rem; }
+
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text);
+  width: fit-content;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line-3);
+  transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+}
+.arrow-link span { transition: transform var(--t) var(--ease); }
+.arrow-link:hover { color: var(--accent); border-color: var(--accent); }
+.arrow-link:hover span { transform: translate(3px, -3px); }
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  transition: color var(--t-fast) var(--ease);
+}
+.back-link:hover { color: var(--accent); }
+.back-link span { transition: transform var(--t) var(--ease); }
+.back-link:hover span { transform: translateX(-3px); }
+
+/* --- meta ----------------------------------------------------- */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.32rem 0.66rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  animation: pulse 2.6s var(--ease-io) infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.status--quiet i { background: var(--text-3); box-shadow: none; animation: none; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tags span {
+  padding: 0.3rem 0.62rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.facts {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin: 0;
+  box-shadow: var(--shadow-xs);
+}
+.facts > div {
+  background: var(--surface);
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.facts dt {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.facts dd { margin: 0; font-size: 0.93rem; color: var(--text); }
+
+/* --- section head --------------------------------------------- */
+.section-head {
+  display: grid;
+  gap: 1.6rem;
+  align-items: end;
+  margin-bottom: clamp(2.25rem, 5vw, 3.75rem);
+}
+.section-head__copy { display: flex; flex-direction: column; gap: 1.15rem; }
+@media (min-width: 900px) {
+  .section-head { grid-template-columns: 1.35fr 1fr; gap: 3rem; }
+}
+
+/* --- cards ---------------------------------------------------- */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: border-color var(--t) var(--ease), transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+.card:hover {
+  border-color: var(--line-3);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* --- project card --------------------------------------------- */
+.project-card { isolation: isolate; }
+.project-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.05rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.project-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.5rem 1.25rem 1.25rem;
+  flex: 1;
+}
+.project-card__title {
+  font-size: clamp(1.45rem, 2.6vw, 2.05rem);
+  text-transform: uppercase;
+  transition: color var(--t) var(--ease);
+}
+.card:hover .project-card__title { color: var(--accent); }
+.project-card__desc { color: var(--text-2); font-size: 0.94rem; }
+.project-card__foot {
+  margin-top: auto;
+  padding-top: 1.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+.project-card__ghost {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.1rem;
+  font-family: var(--display);
+  font-size: 5.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--surface-3);
+  pointer-events: none;
+  transition: color var(--t) var(--ease), transform var(--t) var(--ease);
+}
+.card:hover .project-card__ghost { color: var(--accent-soft); transform: translateY(-3px); }
+
+.project-card__link { display: inline-block; }
+.project-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+}
+.project-card__link:focus-visible { outline: none; }
+.project-card:has(.project-card__link:focus-visible) { border-color: var(--accent); }
+.project-card:has(.project-card__link:focus-visible)::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 2px solid var(--accent);
+  border-radius: calc(var(--radius-lg) + 3px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ============================================================
+   PROJECT VISUAL — a bright product stage, built procedurally
+   ============================================================ */
+.visual {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: radial-gradient(120% 100% at 50% 0%, #ffffff 0%, #f7fbff 58%, #f1f7fd 100%);
+  isolation: isolate;
+}
+.visual--hero {
+  aspect-ratio: 16 / 11;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+.visual__grid {
+  position: absolute;
+  inset: -1px;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(90% 80% at 50% 45%, #000 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(90% 80% at 50% 45%, #000 20%, transparent 100%);
+}
+.visual__glow {
+  position: absolute;
+  width: 74%;
+  aspect-ratio: 1;
+  left: 50%;
+  top: 44%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  filter: blur(48px);
+  opacity: 0.55;
+  transition: opacity var(--t-slow) var(--ease), transform var(--t-slow) var(--ease);
+}
+.card:hover .visual__glow,
+.visual:hover .visual__glow { opacity: 0.85; transform: translate(-50%, -52%) scale(1.06); }
+
+.visual__stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transition: transform var(--t-slow) var(--ease);
+}
+.card:hover .visual__stage { transform: scale(1.03) translateY(-4px); }
+
+.visual__tag {
+  position: absolute;
+  left: 0.9rem;
+  bottom: 0.8rem;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  transition: transform var(--t) var(--ease), color var(--t) var(--ease);
+}
+.card:hover .visual__tag { transform: translateY(-3px); color: var(--accent); }
+
+.visual__scan {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(var(--accent-rgb), 0.07) 50%, transparent 100%);
+  transform: translateY(-100%);
+  animation: scan 7s var(--ease-io) infinite;
+  pointer-events: none;
+}
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  55%, 100% { transform: translateY(100%); }
+}
+
+/* --- shared primitives inside visuals ------------------------- */
+.vpanel {
+  position: absolute;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.38rem;
+  padding: 0.6rem 0.65rem;
+  transition: transform var(--t-slow) var(--ease), box-shadow var(--t-slow) var(--ease);
+}
+.vpanel b,
+.vpanel i,
+.vpanel em {
+  font-family: var(--mono);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.42rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.vpanel b { color: var(--text); }
+.vpanel i { color: var(--accent); }
+.vpanel em { color: var(--text-3); }
+.vbar { height: 3px; border-radius: 2px; background: var(--surface-3); }
+.vbar--accent { background: var(--brand-gradient); }
+
+/* BookMySalon — booking interface */
+.visual--bookmysalon .visual__glow { background: radial-gradient(circle, rgba(var(--accent-rgb), 0.3) 0%, transparent 68%); }
+.visual--bookmysalon .vpanel--app {
+  width: 34%;
+  min-width: 104px;
+  aspect-ratio: 9 / 15.5;
+  left: 16%;
+  top: 15%;
+  border-radius: 12px;
+  padding: 0.55rem 0.5rem;
+}
+.card:hover .visual--bookmysalon .vpanel--app { transform: translateY(-6px) rotate(-1.2deg); }
+.visual--bookmysalon .vslots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  margin-top: 0.15rem;
+}
+.visual--bookmysalon .vslots span {
+  height: 9px;
+  border-radius: 3px;
+  border: 1px solid var(--line-2);
+  background: var(--surface-2);
+}
+.visual--bookmysalon .vslots span[data-on="true"] { border-color: transparent; background: var(--accent); }
+.visual--bookmysalon .vpanel--confirm {
+  width: 38%;
+  min-width: 118px;
+  right: 12%;
+  top: 30%;
+}
+.card:hover .visual--bookmysalon .vpanel--confirm { transform: translate(4px, -10px) rotate(1.4deg); }
+.visual--bookmysalon .vpanel--chip {
+  right: 17%;
+  top: 16%;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  box-shadow: var(--shadow-sm);
+}
+.card:hover .visual--bookmysalon .vpanel--chip { transform: translate(-6px, -4px); }
+
+/* AI Interview & Viva Engine — reasoning system */
+.visual--ai-interview-viva-engine .visual__glow { background: radial-gradient(circle, rgba(var(--cyan-rgb), 0.3) 0%, transparent 68%); }
+.vcore {
+  position: relative;
+  width: 26%;
+  min-width: 74px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  box-shadow: 0 20px 44px -14px rgba(var(--accent-rgb), 0.5);
+  display: grid;
+  place-items: center;
+}
+.vcore::before,
+.vcore::after {
+  content: "";
+  position: absolute;
+  inset: -26%;
+  border: 1px solid var(--accent-line);
+  border-radius: 50%;
+  animation: orbit-spin 18s linear infinite;
+}
+.vcore::after { inset: -52%; border-style: dashed; animation-duration: 30s; animation-direction: reverse; }
+@keyframes orbit-spin { to { transform: rotate(360deg); } }
+.vcore i {
+  width: 42%;
+  height: 42%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+}
+.visual--ai-interview-viva-engine .vpanel--q { left: 8%; top: 18%; width: 30%; min-width: 92px; }
+.visual--ai-interview-viva-engine .vpanel--score { right: 8%; bottom: 18%; width: 32%; min-width: 96px; }
+.card:hover .visual--ai-interview-viva-engine .vpanel--q { transform: translate(-5px, -5px); }
+.card:hover .visual--ai-interview-viva-engine .vpanel--score { transform: translate(5px, 5px); }
+
+/* Fuellink — connected hardware, silver on white */
+.visual--fuellink .visual__glow { background: radial-gradient(circle, rgba(var(--accent-rgb), 0.26) 0%, transparent 68%); }
+.vdevice {
+  position: relative;
+  width: 30%;
+  min-width: 92px;
+  aspect-ratio: 5 / 7;
+  border-radius: 14px;
+  border: 1px solid var(--line-3);
+  background: linear-gradient(155deg, #ffffff 0%, #f2f5f9 46%, #e8edf3 100%);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 0.5rem;
+  transition: transform var(--t-slow) var(--ease);
+}
+.card:hover .vdevice { transform: rotate(-2deg) translateY(-4px); }
+.vdevice b {
+  width: 46%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  box-shadow: 0 10px 22px -6px rgba(var(--accent-rgb), 0.55);
+}
+.vdevice i,
+.vdevice em {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 0.42rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.vdevice i { color: var(--text); }
+.vdevice em { color: var(--text-3); }
+.vsignal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34%;
+  aspect-ratio: 1;
+  border: 1px solid var(--accent-line);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: emit 3.6s var(--ease-io) infinite;
+  opacity: 0;
+}
+.vsignal--2 { animation-delay: 1.2s; }
+.vsignal--3 { animation-delay: 2.4s; }
+@keyframes emit {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(3.1); opacity: 0; }
+}
+.visual--fuellink .vpanel--link { right: 9%; top: 20%; width: 30%; min-width: 92px; }
+.card:hover .visual--fuellink .vpanel--link { transform: translate(5px, -6px); }
+
+/* --- real screenshot visuals ---------------------------------- */
+.visual--shot {
+  background: radial-gradient(110% 100% at 50% 0%, #ffffff 0%, #f4f9ff 100%);
+}
+.visual__shot-frame { position: absolute; inset: 0; }
+.visual__shot { position: absolute; inset: 0; }
+.visual__shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform var(--t-slow) var(--ease);
+}
+.card:hover .visual__shot img { transform: scale(1.04); }
+.visual__veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 30%, rgba(255, 255, 255, 0.72) 100%);
+  pointer-events: none;
+}
+.visual--shot .visual__tag { color: var(--text-2); }
+
+/* --- lab card -------------------------------------------------- */
+.lab-card {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--t) var(--ease), background var(--t) var(--ease), transform var(--t) var(--ease),
+    box-shadow var(--t) var(--ease);
+}
+.lab-card:hover {
+  border-color: var(--accent-line);
+  transform: translateY(-3px);
+  background: linear-gradient(180deg, #ffffff 0%, var(--accent-tint) 100%);
+  box-shadow: var(--shadow-md);
+}
+.lab-card__body { display: flex; flex-direction: column; gap: 0.85rem; }
+.lab-card__title { font-size: clamp(1.3rem, 2.4vw, 1.9rem); text-transform: uppercase; }
+.lab-card__title a { transition: color var(--t-fast) var(--ease); }
+.lab-card:hover .lab-card__title a { color: var(--accent); }
+@media (min-width: 780px) {
+  .lab-card { grid-template-columns: 240px 1fr auto; align-items: center; gap: 2rem; }
+}
+
+/* --- lab specimen: a technical study on a lit plate -------------- */
+.specimen {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background:
+    repeating-linear-gradient(90deg, rgba(var(--ink-rgb), 0.028) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(0deg, rgba(var(--ink-rgb), 0.028) 0 1px, transparent 1px 14px),
+    linear-gradient(180deg, #ffffff 0%, var(--atmo-3) 100%);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-xs);
+}
+.specimen__light {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 90%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.16) 0%, rgba(var(--cyan-rgb), 0.06) 46%, transparent 70%);
+  filter: blur(18px);
+}
+/* measurement rules, the way a drawing is dimensioned */
+.specimen__rule {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.28), transparent);
+}
+.specimen__rule--h { left: 8%; right: 8%; top: 50%; height: 1px; }
+.specimen__rule--v {
+  top: 10%;
+  bottom: 10%;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(var(--accent-rgb), 0.22), transparent);
+}
+.specimen__form {
+  position: relative;
+  width: 46%;
+  aspect-ratio: 1;
+  border: 1.5px solid var(--accent);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.25));
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: var(--shadow-glass);
+  transition: transform var(--t-slow) var(--ease);
+}
+.lab-card:hover .specimen__form { transform: rotate(45deg) scale(0.86); }
+.specimen--01 .specimen__form { border-radius: 50%; }
+.specimen--01 .specimen__form::after {
+  content: "";
+  position: absolute;
+  inset: 22%;
+  border: 1px dashed rgba(var(--accent-rgb), 0.5);
+  border-radius: 50%;
+}
+.specimen--02 .specimen__form { transform: rotate(45deg); }
+.lab-card:hover .specimen--02 .specimen__form { transform: rotate(0deg) scale(0.88); }
+.specimen--02 .specimen__form::after {
+  content: "";
+  position: absolute;
+  inset: 24%;
+  background: rgba(var(--accent-rgb), 0.12);
+  border: 1px solid var(--accent-line);
+}
+.specimen--03 .specimen__form { border-radius: 0; border-style: dashed; }
+.specimen--03 .specimen__form::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -12%;
+  bottom: -12%;
+  width: 1px;
+  background: var(--accent);
+}
+/* a caliper mark along the bottom edge */
+.specimen__caliper {
+  position: absolute;
+  left: 27%;
+  right: 27%;
+  bottom: 12%;
+  height: 5px;
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  border-top: 0;
+}
+.specimen__index,
+.specimen__status {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.specimen__index { left: 0.65rem; top: 0.55rem; color: var(--text-3); }
+.specimen__status { right: 0.65rem; top: 0.55rem; color: var(--accent); }
+
+/* ============================================================
+   FORM — light surfaces, blue CTA
+   ============================================================ */
+.form { display: flex; flex-direction: column; gap: 1.15rem; }
+.field { display: flex; flex-direction: column; gap: 0.55rem; }
+.field > span {
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.96rem;
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease),
+    box-shadow var(--t-fast) var(--ease);
+}
+.field textarea { resize: vertical; min-height: 8.5rem; }
+.field input::placeholder,
+.field textarea::placeholder { color: var(--text-3); }
+.field input:hover,
+.field textarea:hover,
+.field select:hover { border-color: var(--line-3); }
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--accent-tint);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.field[data-invalid="true"] input,
+.field[data-invalid="true"] textarea { border-color: #d92d20; }
+.field__error {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #b42318;
+}
+.form__note {
+  font-size: 0.82rem;
+  color: var(--text-3);
+  line-height: 1.6;
+}
+.form-success {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  align-items: flex-start;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-lg);
+  background: var(--accent-soft);
+}
+@media (min-width: 680px) {
+  .form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.15rem; }
+}
+
+/* ============================================================
+   BACKDROP — a page-level environment wrapper.
+   The light layers themselves now live in atmosphere.css; this
+   only positions the wrapper, the ambient canvas and the markers.
+   ============================================================ */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.backdrop--fixed { position: fixed; }
+.backdrop__canvas { position: absolute; inset: 0; }
+
+.backdrop__marker { position: absolute; opacity: 0.9; }
+.backdrop__marker--a { left: clamp(0.6rem, 1.4vw, 1.6rem); top: 26vh; }
+.backdrop__marker--b { right: clamp(0.6rem, 1.4vw, 1.6rem); bottom: 16vh; }
+
+@media (max-width: 1279px) {
+  .backdrop__marker { display: none; }
+}

@@ -1,58 +1,125 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { navigation } from "@/data/navigation";
+import { useEffect, useState } from "react";
+import { navigation, site } from "@/data/site";
+import { BrandMark } from "@/components/ui/brand-mark";
 
 export function SiteHeader() {
-  const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => setOpen(false), [pathname]);
 
   useEffect(() => {
-    const closeOnEscape = (event: KeyboardEvent) => event.key === "Escape" && setIsOpen(false);
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
+    let frame = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        setScrolled(window.scrollY > 12);
+        setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  const isCurrent = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+
   return (
-    <header className="site-header">
-      <div className="nav-shell">
-        <Link href="/" className="brand" aria-label="N4IS home" onClick={() => setIsOpen(false)}>
-          <Image
-            className="brand-logo"
-            src="/brand/n4is-logo.png"
-            alt="N4IS"
-            width={144}
-            height={42}
-            priority
-          />
-        </Link>
+    <>
+      <header className="header" data-scrolled={scrolled ? "true" : "false"}>
+        <div className="shell">
+          <div className="header__inner">
+            <Link href="/" className="header__brand" aria-label={`${site.name} — home`} data-cursor="link">
+              <BrandMark variant="wordmark" priority sizes="120px" alt="N4IS" />
+              <span className="header__brand-meta" aria-hidden="true">
+                <b>{site.domain}</b>
+                <i>Digital technology studio</i>
+              </span>
+            </Link>
 
-        <nav className="desktop-nav" aria-label="Primary navigation">
-          {navigation.map((item) => <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined}>{item.label}</Link>)}
-        </nav>
+            <nav className="header__nav" aria-label="Primary">
+              {navigation.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="header__link"
+                  aria-current={isCurrent(item.href) ? "page" : undefined}
+                  data-cursor="link"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
 
-        <button
-          className="menu-button"
-          type="button"
-          aria-label={isOpen ? "Close navigation" : "Open navigation"}
-          aria-expanded={isOpen}
-          aria-controls="mobile-navigation"
-          onClick={() => setIsOpen((open) => !open)}
-        >
-          <span /> <span />
-        </button>
-      </div>
+            <Link href="/contact" className="btn btn--primary btn--small header__cta" data-cursor="link">
+              <span>Let&apos;s build</span>
+              <span className="btn__arrow" aria-hidden="true">↗</span>
+            </Link>
 
-      <nav id="mobile-navigation" className={`mobile-nav ${isOpen ? "is-open" : ""}`} aria-label="Mobile navigation">
-        {navigation.map((item, index) => (
-          <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined} tabIndex={isOpen ? 0 : -1} onClick={() => setIsOpen(false)}>
-            <span>0{index + 1}</span>{item.label}
+            <button
+              type="button"
+              className="menu-button"
+              aria-label={open ? "Close navigation" : "Open navigation"}
+              aria-expanded={open}
+              aria-controls="mobile-navigation"
+              onClick={() => setOpen((value) => !value)}
+            >
+              <span />
+              <span />
+            </button>
+
+            <span className="header__progress" style={{ ["--progress" as string]: progress } as React.CSSProperties} aria-hidden="true" />
+          </div>
+        </div>
+      </header>
+
+      <nav id="mobile-navigation" className="mobile-nav" data-open={open ? "true" : "false"} aria-label="Mobile">
+        {navigation.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="mobile-nav__link"
+            aria-current={isCurrent(item.href) ? "page" : undefined}
+            tabIndex={open ? 0 : -1}
+            onClick={() => setOpen(false)}
+          >
+            <span>{item.index}</span>
+            {item.label}
           </Link>
         ))}
+        <div className="mobile-nav__foot">
+          <p className="label">{site.tagline}</p>
+          <Link href="/contact" className="btn btn--primary" tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}>
+            <span>Let&apos;s build</span>
+            <span className="btn__arrow" aria-hidden="true">↗</span>
+          </Link>
+        </div>
       </nav>
-    </header>
+    </>
   );
 }

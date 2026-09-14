@@ -1,14 +1,19 @@
-import { FeaturedProjects } from "@/components/sections/featured-projects";
+import { Hero } from "@/components/sections/hero";
+import { Definition } from "@/components/sections/definition";
+import { CurrentlyBuilding } from "@/components/sections/currently-building";
+import { LabTeaser } from "@/components/sections/lab-teaser";
+import { FounderTeaser } from "@/components/sections/founder-teaser";
+import { CtaBand } from "@/components/sections/cta-band";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main id="main-content" className="foundation-main">
-      <section className="foundation-screen" aria-labelledby="foundation-title">
-        <p className="eyebrow">N4IS / DIGITAL TECHNOLOGY STUDIO</p>
-        <h1 id="foundation-title">BUILDING WHAT&apos;S NEXT.</h1>
-        <p className="foundation-copy">The N4IS experience is taking shape.</p>
-      </section>
-      <FeaturedProjects />
+    <main id="main-content">
+      <Hero />
+      <Definition />
+      <CurrentlyBuilding />
+      <LabTeaser />
+      <FounderTeaser />
+      <CtaBand />
     </main>
   );
 }
