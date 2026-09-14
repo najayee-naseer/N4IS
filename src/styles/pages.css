@@ -44,15 +44,25 @@
   padding-bottom: 4rem;
   overflow: hidden;
 }
+/* on narrow screens the corridor recedes into atmosphere behind the type,
+   rather than competing with it for space */
+@media (max-width: 1023px) {
+  .hero .backdrop__canvas { opacity: 0.78; }
+}
+@media (max-width: 640px) {
+  .hero .backdrop__canvas { opacity: 0.6; }
+}
 .hero__inner {
   position: relative;
   z-index: 2;
-  display: grid;
-  gap: clamp(2.5rem, 6vw, 4rem);
   width: 100%;
-  align-items: center;
 }
-.hero__content { display: flex; flex-direction: column; gap: clamp(1.4rem, 3vw, 2.1rem); }
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.4rem, 3vw, 2.1rem);
+  max-width: 46rem;
+}
 .hero__title {
   font-size: var(--fs-hero);
   text-transform: uppercase;
@@ -73,14 +83,6 @@
 }
 .hero__lead { max-width: 48ch; }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 0.85rem 1.15rem; align-items: center; }
-
-.hero__visual {
-  position: relative;
-  aspect-ratio: 1;
-  min-height: 300px;
-  display: grid;
-  place-items: center;
-}
 
 .hero__stats {
   display: flex;
@@ -142,87 +144,7 @@
 }
 
 @media (min-width: 1024px) {
-  .hero__inner { grid-template-columns: 1.06fr 0.94fr; }
   .hero__scroll { display: flex; }
-}
-
-/* ============================================================
-   THE ARTIFACT — presented in its own lit studio frame
-   ============================================================ */
-.studio-object {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 300px;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-/* the pool of white light the object stands in */
-.studio-object__light {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(56% 44% at 52% 38%, rgba(var(--cyan-rgb), 0.15) 0%, transparent 70%),
-    radial-gradient(80% 70% at 50% 45%, #ffffff 0%, rgba(255, 255, 255, 0) 74%);
-}
-/* a broad blue wash behind it, the single strongest light in the hero */
-.studio-object__halo {
-  position: absolute;
-  left: 50%;
-  top: 44%;
-  width: 86%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.16) 0%, rgba(var(--cyan-rgb), 0.07) 44%, transparent 70%);
-  filter: blur(28px);
-}
-/* a thin architectural frame, open at the corners */
-.studio-object__frame {
-  position: absolute;
-  inset: 8% 6%;
-  border: 1px solid rgba(var(--accent-rgb), 0.12);
-  border-radius: var(--radius);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
-}
-.studio-object__tick {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border: 1px solid rgba(var(--accent-rgb), 0.4);
-}
-.studio-object__tick--tl { left: 6%; top: 8%; border-right: 0; border-bottom: 0; }
-.studio-object__tick--br { right: 6%; bottom: 8%; border-left: 0; border-top: 0; }
-/* the soft floor the object sits on */
-.studio-object__plinth {
-  position: absolute;
-  left: 50%;
-  bottom: 12%;
-  width: 62%;
-  height: 12%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(var(--ink-rgb), 0.12), transparent 76%);
-  filter: blur(7px);
-}
-.studio-object__caption,
-.studio-object__readout {
-  position: absolute;
-  font-family: var(--mono);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-.studio-object__caption { right: 0.75rem; bottom: 0.5rem; }
-.studio-object__readout { left: 0.75rem; top: 0.5rem; }
-@media (max-width: 1023px) {
-  .studio-object { opacity: 0.94; }
-  .studio-object__caption,
-  .studio-object__readout,
-  .studio-object__frame,
-  .studio-object__tick { display: none; }
 }
 
 /* --- hero annotations: architectural marks, not a HUD ---------- */
@@ -251,56 +173,27 @@
 /* ============================================================
    HOME — WHAT IS N4IS
    ============================================================ */
-.definition { display: grid; gap: clamp(2rem, 5vw, 3.5rem); }
-.definition__statement {
-  font-family: var(--display);
-  font-size: clamp(1.5rem, 3.4vw, 2.65rem);
-  font-weight: 600;
-  line-height: 1.16;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-}
-.definition__statement b { font-weight: 700; color: var(--text); }
-.definition__statement span { color: var(--text-3); font-weight: 500; }
-.definition__aside { display: flex; flex-direction: column; gap: 1.25rem; }
-@media (min-width: 980px) {
-  .definition { grid-template-columns: 1.5fr 1fr; align-items: start; }
-}
-
+/* --- principles: an editorial list, not a card grid ------------ */
 .principles {
   display: grid;
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  gap: 0;
   margin-top: clamp(2.5rem, 6vw, 4rem);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-  box-shadow: var(--shadow-xs);
+  border-top: 1px solid var(--line-2);
 }
 .principle {
   position: relative;
-  background: var(--surface);
-  padding: clamp(1.5rem, 3vw, 2.1rem);
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
+  padding: clamp(1.1rem, 2.6vw, 1.5rem) 0;
+  display: grid;
+  gap: 0.3rem 2rem;
+  border-bottom: 1px solid var(--line-2);
   transition: background var(--t) var(--ease);
 }
 .principle:hover { background: var(--accent-tint); }
-.principle::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 2px;
-  height: 0;
-  background: var(--brand-gradient);
-  transition: height var(--t) var(--ease);
-}
-.principle:hover::before { height: 100%; }
-.principle h3 { font-size: 1.06rem; text-transform: uppercase; letter-spacing: -0.01em; }
+.principle h3 { font-size: 1rem; text-transform: uppercase; letter-spacing: -0.01em; color: var(--text); }
 .principle p { font-size: 0.9rem; color: var(--text-2); }
+@media (min-width: 700px) {
+  .principle { grid-template-columns: 3rem 15rem 1fr; align-items: baseline; padding-inline: 0.5rem; }
+}
 
 /* --- process chain --------------------------------------------- */
 .chain {
@@ -401,6 +294,22 @@
 /* ============================================================
    LAB
    ============================================================ */
+.lab-teaser { position: relative; overflow: hidden; }
+.lab-teaser__vocab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  margin: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(2.5rem, 6vw, 4rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line-2);
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.16em;
+  color: var(--text-3);
+}
+.lab-teaser__vocab i { font-style: normal; color: var(--accent); }
 .lab-meta {
   display: flex;
   flex-wrap: wrap;
@@ -665,7 +574,7 @@
    ============================================================ */
 .definition-section { overflow: hidden; }
 .definition-section__inner { position: relative; z-index: 1; }
-.definition { display: grid; gap: clamp(2.5rem, 6vw, 4.5rem); align-items: center; }
+.definition { display: flex; flex-direction: column; gap: clamp(2.5rem, 6vw, 4.5rem); max-width: 52rem; }
 .definition__copy { display: flex; flex-direction: column; gap: 1.4rem; }
 .definition__title {
   font-size: clamp(2.6rem, 8vw, 6rem);
@@ -680,112 +589,259 @@
   line-height: 1.22;
   letter-spacing: -0.028em;
   text-wrap: balance;
-  max-width: 26ch;
+  max-width: 34ch;
 }
 .definition__statement b { font-weight: 700; color: var(--text); }
 .definition__statement span { color: var(--text-3); font-weight: 500; }
 .definition__order { display: flex; flex-direction: column; gap: 0.9rem; margin-top: 0.6rem; }
-@media (min-width: 980px) {
-  .definition { grid-template-columns: 1.08fr 0.92fr; }
-}
 
-/* --- strata: three stacked layers, built rather than illustrated --- */
-.strata { position: relative; display: flex; flex-direction: column; gap: 1.1rem; }
-.strata__scene {
-  position: relative;
-  aspect-ratio: 1 / 0.92;
-  display: grid;
-  place-items: center;
-  perspective: 1100px;
-}
-.strata__glow {
-  position: absolute;
-  left: 50%;
-  top: 52%;
-  width: 78%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.14) 0%, rgba(var(--cyan-rgb), 0.06) 46%, transparent 72%);
-  filter: blur(30px);
-}
-.strata__plate {
-  position: absolute;
-  left: 50%;
-  width: min(78%, 26rem);
-  aspect-ratio: 16 / 9;
+/* ============================================================
+   SECTION 02A — PHILOSOPHY
+   Three words at increasing depth, converging into the mark.
+   ============================================================ */
+.philosophy { padding-block: clamp(4rem, 10vw, 7.5rem); }
+.philosophy__inner {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.2rem;
-  padding: 1rem 1.15rem;
-  border: 1px solid rgba(var(--accent-rgb), 0.16);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.97) 0%, rgba(238, 245, 255, 0.82) 100%);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.95) inset,
-    0 26px 50px -26px rgba(var(--ink-rgb), 0.22),
-    0 10px 26px -14px rgba(var(--accent-rgb), 0.28);
-  transform-style: preserve-3d;
-  transition: transform 0.9s var(--ease), box-shadow 0.9s var(--ease);
+  align-items: center;
+  text-align: center;
+  gap: clamp(2rem, 5vw, 3.25rem);
 }
-.strata__plate::after {
-  content: attr(data-index);
-  position: absolute;
-  right: 1.15rem;
-  bottom: 1.05rem;
+.philosophy__inner > .label-rule { align-self: center; }
+
+.philosophy__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.4rem, 1.2vw, 0.75rem);
+}
+.philosophy__word {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.philosophy__word span {
+  font-family: var(--display);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.philosophy__word i {
+  font-style: normal;
   font-family: var(--mono);
   font-size: var(--fs-micro);
-  letter-spacing: 0.2em;
-  color: var(--accent);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
 }
-.strata__plate b {
-  border-top: 1px solid rgba(var(--accent-rgb), 0.3);
-  padding-top: 0.55rem;
+/* furthest: small, faint, soft-focus */
+.philosophy__word--1 span { font-size: clamp(1.3rem, 3vw, 2rem); color: var(--text-3); filter: blur(0.4px); }
+.philosophy__word--1 { opacity: 0.7; }
+/* middle: gaining weight and clarity */
+.philosophy__word--2 span { font-size: clamp(1.9rem, 4.4vw, 3.1rem); color: var(--text-2); }
+.philosophy__word--2 { opacity: 0.88; }
+/* nearest: full weight, full contrast */
+.philosophy__word--3 span { font-size: clamp(2.7rem, 7vw, 4.6rem); color: var(--text); letter-spacing: -0.03em; }
+
+.philosophy__result {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding-top: clamp(1.75rem, 4vw, 2.5rem);
+  max-width: 40ch;
+}
+.philosophy__result::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: clamp(1.5rem, 3.5vw, 2.25rem);
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, transparent, rgba(var(--accent-rgb), 0.4));
+}
+.philosophy__mark { width: clamp(2.4rem, 5vw, 3rem); }
+.philosophy__mark img { width: 100%; height: auto; }
+.philosophy__result p { color: var(--text-2); font-size: var(--fs-lead); line-height: 1.6; }
+
+@media (prefers-reduced-motion: reduce) {
+  .philosophy__word--1 { filter: none; }
+}
+
+/* ============================================================
+   SECTION 02B — THE N4IS ECOSYSTEM
+   Architecture connecting a centre to its work, drawn from the
+   same arch language as the hero corridor.
+   ============================================================ */
+.ecosystem-section { overflow: hidden; }
+.ecosystem__title {
+  font-size: clamp(2.2rem, 6vw, 4.4rem);
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  margin-top: 0.9rem;
+}
+.ecosystem__lead { margin-top: 1.1rem; max-width: 52ch; }
+
+.ecosystem {
+  margin-top: clamp(3rem, 7vw, 5rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 5vw, 3rem);
+}
+
+.ecosystem__stage {
+  position: relative;
+  min-height: clamp(30rem, 52vw, 38rem);
+}
+.ecosystem__paths {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ecosystem__paths path {
+  fill: none;
+  stroke: rgba(var(--accent-rgb), 0.32);
+  stroke-width: 0.3;
+  stroke-dasharray: 3 5;
+  animation: ecosystem-flow 6s linear infinite;
+}
+.ecosystem__paths path:nth-child(2) { animation-delay: -1.5s; }
+.ecosystem__paths path:nth-child(3) { animation-delay: -3s; }
+.ecosystem__paths path:nth-child(4) { animation-delay: -4.5s; }
+@keyframes ecosystem-flow {
+  to { stroke-dashoffset: -32; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ecosystem__paths path { animation: none; }
+}
+
+.ecosystem__core {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: clamp(8.5rem, 15vw, 10.5rem);
+  padding: 1.4rem 1rem 1.1rem;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 50% 50% var(--radius-lg) var(--radius-lg);
+  background: linear-gradient(180deg, #ffffff 0%, var(--accent-tint) 100%);
+  box-shadow: var(--shadow-glass);
+}
+.ecosystem__core img { width: clamp(2.6rem, 5vw, 3.4rem); height: auto; }
+.ecosystem__core b {
   font-family: var(--display);
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: var(--text);
 }
-.strata__plate i {
+.ecosystem__core i {
   font-style: normal;
   font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-2);
+  color: var(--text-3);
 }
-.strata__plate--1 { transform: translate(-50%, -34%) rotateX(46deg) rotateZ(-20deg); z-index: 3; }
-.strata__plate--2 { transform: translate(-50%, -4%) rotateX(46deg) rotateZ(-20deg); z-index: 2; opacity: 0.96; }
-.strata__plate--3 { transform: translate(-50%, 26%) rotateX(46deg) rotateZ(-20deg); z-index: 1; opacity: 0.9; }
-.strata__scene:hover .strata__plate--1 { transform: translate(-50%, -41%) rotateX(46deg) rotateZ(-20deg); }
-.strata__scene:hover .strata__plate--3 { transform: translate(-50%, 33%) rotateX(46deg) rotateZ(-20deg); }
-.strata__axis {
+
+.ecosystem__nodes {
   position: absolute;
-  left: 50%;
-  top: 12%;
-  bottom: 12%;
-  width: 1px;
-  background: linear-gradient(180deg, transparent, rgba(var(--accent-rgb), 0.32), transparent);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(0.75rem, 2vw, 1.5rem);
 }
-.strata__anno { position: static; justify-content: center; }
-@media (max-width: 620px) {
-  .strata__plate { width: min(92%, 20rem); padding: 0.75rem 0.85rem; }
-  .strata__plate b { font-size: 0.9rem; }
+.ecosystem__node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+.ecosystem__node-visual {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), border-color var(--t) var(--ease);
+}
+.ecosystem__node:hover .ecosystem__node-visual {
+  transform: translateY(-4px);
+  border-color: var(--line-3);
+  box-shadow: var(--shadow-md);
+}
+.ecosystem__node-visual .visual { aspect-ratio: 4 / 3; }
+.ecosystem__node-visual .visual__tag { display: none; }
+.ecosystem__node b {
+  font-family: var(--display);
+  font-size: clamp(0.82rem, 1.4vw, 0.98rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.ecosystem__tags { justify-content: center; }
+
+@media (max-width: 899px) {
+  .ecosystem__paths { display: none; }
+  .ecosystem__stage {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.75rem;
+  }
+  .ecosystem__core { position: static; transform: none; }
+  .ecosystem__nodes {
+    position: static;
+    width: 100%;
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* ============================================================
-   SECTION 03 — CURRENTLY BUILDING
+   SECTION 05 — CURRENTLY BUILDING
+   Every project as a full editorial moment, in sequence — not a
+   lead panel followed by a grid of smaller cards.
    ============================================================ */
-.building__lead { margin-bottom: clamp(1.25rem, 3vw, 2.25rem); }
-.building__support {
-  display: grid;
-  gap: clamp(1.25rem, 3vw, 2.25rem);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr));
+.building__panels {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4rem, 9vw, 7rem);
+  margin-top: clamp(2rem, 5vw, 3rem);
+}
+/* the environment leans toward what each project actually is,
+   while staying inside the brand's blue/cyan register */
+.building__panels [data-tone="appleexpert"] .panel__stage-glow {
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.17) 0%, transparent 68%);
+}
+.building__panels [data-tone="ai-interview-viva-engine"] .panel__stage-glow {
+  background: radial-gradient(circle, rgba(var(--cyan-rgb), 0.2) 0%, transparent 68%);
+}
+.building__panels [data-tone="indoor-futsal-booking"] .panel__stage-glow {
+  background: radial-gradient(circle, rgba(var(--lavender-rgb), 0.16) 0%, transparent 68%);
+}
+.building__panels [data-tone="fuellink"] .panel__stage-glow {
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.22) 0%, transparent 68%);
 }
 
 /* --- the panel: a product launch, not a card ------------------ */
@@ -864,6 +920,7 @@
 .panel__shot-img {
   width: 100%;
   height: auto;
+  object-fit: contain;
   border-radius: var(--radius) var(--radius) 0 0;
   border: 1px solid var(--border);
   border-bottom: 0;
@@ -928,6 +985,46 @@
 }
 .founder-portrait { overflow: visible; }
 .founder-portrait > img { border-radius: calc(var(--radius-lg) - 4px); }
+
+/* ============================================================
+   CTA — RETURN TO THE PORTAL (homepage close)
+   The hero's corridor reappears, seen from further inside and
+   lit stronger — the journey's beginning answered by its end.
+   ============================================================ */
+.cta-portal {
+  position: relative;
+  min-height: clamp(520px, 78svh, 900px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding-block: clamp(3rem, 8vw, 6rem);
+}
+.cta-portal__inner { position: relative; z-index: 2; width: 100%; }
+.cta-portal__copy {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.2rem, 2.6vw, 1.8rem);
+  max-width: 40rem;
+  margin-left: auto;
+  text-align: right;
+  align-items: flex-end;
+}
+.cta-portal__title {
+  font-size: clamp(2.4rem, 6.6vw, 5.2rem);
+  text-transform: uppercase;
+  letter-spacing: -0.045em;
+  line-height: 0.94;
+}
+.cta-portal__lead { max-width: 34ch; }
+.cta-portal__anno {
+  right: var(--gutter);
+  bottom: 1.85rem;
+  z-index: 2;
+}
+@media (max-width: 760px) {
+  .cta-portal__copy { margin-left: 0; text-align: left; align-items: flex-start; }
+  .cta-portal .backdrop__canvas { opacity: 0.7; }
+}
 
 /* ============================================================
    CTA — a pale blue closing light

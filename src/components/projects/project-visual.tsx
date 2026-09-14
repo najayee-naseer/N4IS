@@ -7,34 +7,6 @@ import type { Project } from "@/types/content";
  * that artwork is used instead, with no code change required.
  */
 function Stage({ project }: { project: Project }) {
-  if (project.slug === "bookmysalon") {
-    return (
-      <div className="visual__stage">
-        <span className="vpanel vpanel--app">
-          <b>Book</b>
-          <i>Studio / Sri Lanka</i>
-          <span className="vbar vbar--accent" style={{ width: "70%" }} />
-          <span className="vbar" style={{ width: "45%" }} />
-          <em>Availability</em>
-          <span className="vslots">
-            {[false, true, false, true, true, false, false, true, false].map((on, index) => (
-              <span key={index} data-on={on ? "true" : "false"} />
-            ))}
-          </span>
-        </span>
-        <span className="vpanel vpanel--confirm">
-          <b>Appointment</b>
-          <i>09:30 — Confirmed</i>
-          <span className="vbar vbar--accent" style={{ width: "100%" }} />
-          <em>Hair · Colour · 90 min</em>
-        </span>
-        <span className="vpanel vpanel--chip">
-          <i>Discover</i>
-        </span>
-      </div>
-    );
-  }
-
   if (project.slug === "ai-interview-viva-engine") {
     return (
       <div className="visual__stage">

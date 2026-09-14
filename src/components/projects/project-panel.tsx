@@ -32,8 +32,8 @@ export function ProjectPanel({
             <Image
               src={project.heroImage}
               alt={`${project.name} — screens from the current build`}
-              width={1280}
-              height={860}
+              width={project.heroImageWidth ?? 1280}
+              height={project.heroImageHeight ?? 860}
               sizes="(max-width: 900px) 92vw, 56vw"
               className="panel__shot-img"
               priority={false}

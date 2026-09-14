@@ -18,21 +18,23 @@ export interface TierSettings {
   particles: number;
   dpr: number;
   segments: number;
-  rings: number;
-  fragments: number;
+  /** How many arches deep the corridor runs. */
+  depth: number;
+  /** Large flanking glass panels standing in for walls. */
   panels: number;
-  frame: boolean;
+  /** Motes travelling the length of the corridor. */
+  streamNodes: number;
 }
 
 /**
- * Device-aware budgets. Mobile drops the architectural frame and most of the
- * glass, keeps the artifact and a handful of motes, and renders at a lower
- * pixel ratio — the composition survives, the thermal cost does not.
+ * Device-aware budgets. Mobile keeps a short two-arch corridor and a
+ * handful of motes at a lower pixel ratio — the composition survives,
+ * the thermal cost does not.
  */
 export const TIER_SETTINGS: Record<Tier, TierSettings> = {
-  mobile: { particles: 60, dpr: 1.4, segments: 22, rings: 1, fragments: 4, panels: 2, frame: false },
-  tablet: { particles: 140, dpr: 1.6, segments: 34, rings: 2, fragments: 7, panels: 4, frame: true },
-  desktop: { particles: 240, dpr: 1.85, segments: 50, rings: 3, fragments: 11, panels: 6, frame: true },
+  mobile: { particles: 50, dpr: 1.4, segments: 24, depth: 2, panels: 0, streamNodes: 3 },
+  tablet: { particles: 110, dpr: 1.6, segments: 34, depth: 3, panels: 2, streamNodes: 5 },
+  desktop: { particles: 180, dpr: 1.85, segments: 46, depth: 4, panels: 3, streamNodes: 7 },
 };
 
 export function tierFor(width: number): Tier {

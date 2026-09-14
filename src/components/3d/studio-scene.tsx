@@ -7,7 +7,7 @@ import { createArchGeometry } from "./arch-geometry";
 import { createShadowTexture, createStudioEnvironment } from "./studio-light";
 import { BRAND, TIER_SETTINGS, type Tier, type TierSettings } from "./theme";
 
-export type SceneVariant = "hero" | "ambient";
+export type SceneVariant = "hero" | "ambient" | "return";
 
 /* ==================================================================
    Studio environment — generated once, shared by every material
@@ -45,15 +45,19 @@ function useScrollRef(enabled: boolean) {
 }
 
 /* ==================================================================
-   Rig — pointer parallax + scroll depth. Slow, never spinning fast.
+   Rig — the camera drifts through the corridor rather than spinning
+   a product. Pointer input nudges position more than rotation, and
+   scroll dollies the whole space deeper into the fog.
    ================================================================== */
 function Rig({
   reducedMotion,
   scroll,
+  depth,
   children,
 }: {
   reducedMotion: boolean;
   scroll: React.RefObject<number>;
+  depth: number;
   children: ReactNode;
 }) {
   const group = useRef<THREE.Group>(null);
@@ -62,195 +66,176 @@ function Rig({
     const node = group.current;
     if (!node || reducedMotion) return;
     const damp = 1 - Math.pow(0.001, delta);
-    node.rotation.y = THREE.MathUtils.lerp(node.rotation.y, state.pointer.x * 0.17, damp);
-    node.rotation.x = THREE.MathUtils.lerp(node.rotation.x, -state.pointer.y * 0.11, damp);
-    node.position.y = THREE.MathUtils.lerp(node.position.y, scroll.current * 1.15, damp * 0.6);
-    node.position.z = THREE.MathUtils.lerp(node.position.z, -scroll.current * 2.1, damp * 0.6);
+    const travel = Math.min(1, scroll.current) * (depth * 1.35);
+    node.rotation.y = THREE.MathUtils.lerp(node.rotation.y, state.pointer.x * 0.05, damp);
+    node.rotation.x = THREE.MathUtils.lerp(node.rotation.x, -state.pointer.y * 0.035, damp);
+    node.position.x = THREE.MathUtils.lerp(node.position.x, state.pointer.x * 0.3, damp * 0.7);
+    node.position.y = THREE.MathUtils.lerp(node.position.y, -state.pointer.y * 0.14, damp * 0.7);
+    node.position.z = THREE.MathUtils.lerp(node.position.z, travel, damp * 0.6);
   });
 
   return <group ref={group}>{children}</group>;
 }
 
 /* ==================================================================
-   Artifact — the N4IS arch in ceramic, chrome and glass
+   Portal — one arch of the corridor, derived from the logo's "n".
+   The nearest is a solid, engineered ceramic form; every arch behind
+   it thins into glass and fog, the way real architecture recedes.
    ================================================================== */
-function Artifact({ segments, reducedMotion }: { segments: number; reducedMotion: boolean }) {
+function Portal({
+  index,
+  segments,
+  reducedMotion,
+}: {
+  index: number;
+  segments: number;
+  reducedMotion: boolean;
+}) {
   const group = useRef<THREE.Group>(null);
+  const near = index === 0;
+  const z = -index * 3.4;
 
-  const geometry = useMemo(() => createArchGeometry({ segments }), [segments]);
-  const backGeometry = useMemo(
-    () => createArchGeometry({ segments: Math.max(16, segments - 14), thickness: 0.92, depth: 0.34 }),
-    [segments],
+  const geometry = useMemo(
+    () => createArchGeometry({ segments: Math.max(16, segments - index * 8), depth: near ? 0.72 : 0.46 }),
+    [segments, index, near],
   );
   const edges = useMemo(() => new THREE.EdgesGeometry(geometry, 28), [geometry]);
 
   useEffect(
     () => () => {
       geometry.dispose();
-      backGeometry.dispose();
       edges.dispose();
     },
-    [geometry, backGeometry, edges],
+    [geometry, edges],
   );
 
   useFrame((state) => {
     const node = group.current;
     if (!node || reducedMotion) return;
     const t = state.clock.elapsedTime;
-    node.rotation.y = Math.sin(t * 0.13) * 0.3;
-    node.rotation.z = Math.sin(t * 0.09) * 0.028;
-    node.position.y = Math.sin(t * 0.32) * 0.1;
+    node.rotation.z = Math.sin(t * 0.05 + index * 1.4) * (near ? 0.014 : 0.008);
+    node.position.y = Math.sin(t * 0.14 + index * 1.1) * 0.05;
+  });
+
+  const fade = Math.max(0.08, 0.6 - index * 0.15);
+
+  return (
+    <group ref={group} position={[index % 2 === 0 ? 0.12 : -0.16, 0, z]} scale={1 - index * 0.055}>
+      <mesh geometry={geometry}>
+        <meshPhysicalMaterial
+          color={near ? BRAND.ceramic : BRAND.mist}
+          metalness={near ? 0.04 : 0.08}
+          roughness={near ? 0.3 : 0.42}
+          clearcoat={near ? 0.9 : 0.35}
+          clearcoatRoughness={0.18}
+          transparent={!near}
+          opacity={near ? 1 : fade}
+          envMapIntensity={near ? 1.05 : 0.65}
+        />
+      </mesh>
+      <lineSegments geometry={edges} scale={1.006}>
+        <lineBasicMaterial color={BRAND.accent} transparent opacity={near ? 0.4 : fade * 0.55} />
+      </lineSegments>
+      {near ? (
+        <mesh geometry={geometry} scale={1.14}>
+          <meshPhysicalMaterial
+            color="#ffffff"
+            metalness={0}
+            roughness={0.05}
+            clearcoat={1}
+            transparent
+            opacity={0.14}
+            envMapIntensity={1.4}
+            side={THREE.BackSide}
+          />
+        </mesh>
+      ) : null}
+    </group>
+  );
+}
+
+/* ==================================================================
+   Corridor — a sequence of arches receding into the fog, with the
+   logo's dot as a beacon at the far end. Architecture, not an object.
+   ================================================================== */
+function Corridor({ depth, segments, reducedMotion }: { depth: number; segments: number; reducedMotion: boolean }) {
+  const beacon = useRef<THREE.Mesh>(null);
+  const beaconZ = -(depth - 1) * 3.4 - 0.4;
+
+  useFrame((state) => {
+    if (!beacon.current || reducedMotion) return;
+    const pulse = 0.65 + Math.sin(state.clock.elapsedTime * 0.9) * 0.2;
+    (beacon.current.material as THREE.MeshStandardMaterial).emissiveIntensity = pulse;
   });
 
   return (
-    <group ref={group} rotation={[0.1, -0.32, 0]}>
-      {/* brushed silver layer — echoes the overlap inside the logo mark */}
-      <mesh geometry={backGeometry} position={[-0.44, -0.2, -0.92]} scale={0.9}>
-        <meshStandardMaterial color={BRAND.silver} metalness={0.82} roughness={0.26} envMapIntensity={1.9} />
-      </mesh>
-
-      {/* primary white ceramic solid */}
-      <mesh geometry={geometry}>
-        <meshPhysicalMaterial
-          color={BRAND.ceramic}
-          metalness={0.04}
-          roughness={0.32}
-          clearcoat={0.9}
-          clearcoatRoughness={0.16}
-          envMapIntensity={1}
-        />
-      </mesh>
-
-      {/* the engineered edge — a thin blue technical line */}
-      <lineSegments geometry={edges} scale={1.005}>
-        <lineBasicMaterial color={BRAND.accent} transparent opacity={0.4} />
-      </lineSegments>
-
-      {/* clear glass shell */}
-      <mesh geometry={geometry} scale={1.15}>
-        <meshPhysicalMaterial
-          color="#ffffff"
-          metalness={0}
-          roughness={0.05}
-          clearcoat={1}
-          transparent
-          opacity={0.16}
-          envMapIntensity={1.5}
-          side={THREE.BackSide}
-        />
-      </mesh>
-
-      {/* the dot from the logo's "i" — the one saturated element */}
-      <mesh position={[1.62, 1.42, 0.5]}>
-        <sphereGeometry args={[0.2, 24, 24]} />
+    <>
+      {Array.from({ length: depth }, (_, i) => (
+        <Portal key={i} index={i} segments={segments} reducedMotion={reducedMotion} />
+      ))}
+      <mesh ref={beacon} position={[0.1, 0.7, beaconZ]}>
+        <sphereGeometry args={[0.15, 20, 20]} />
         <meshStandardMaterial
           color={BRAND.accentBright}
           emissive={BRAND.accent}
-          emissiveIntensity={0.55}
-          metalness={0.3}
-          roughness={0.22}
+          emissiveIntensity={0.7}
+          metalness={0.25}
+          roughness={0.2}
         />
       </mesh>
-    </group>
+      <pointLight position={[0.1, 0.7, beaconZ]} intensity={9} color={BRAND.accentBright} distance={7} decay={2} />
+    </>
   );
 }
 
 /* ==================================================================
-   Architectural frame — the room the artifact is presented in
+   Side panels — large, slow glass surfaces flanking the corridor,
+   standing in for walls rather than debris orbiting a product.
    ================================================================== */
-function ArchitecturalFrame({ reducedMotion }: { reducedMotion: boolean }) {
-  const group = useRef<THREE.Group>(null);
-
-  const edges = useMemo(() => {
-    const box = new THREE.BoxGeometry(5.6, 5.6, 5.6);
-    const geometry = new THREE.EdgesGeometry(box);
-    box.dispose();
-    return geometry;
-  }, []);
-
-  useEffect(() => () => edges.dispose(), [edges]);
-
-  useFrame((state) => {
-    if (!group.current || reducedMotion) return;
-    group.current.rotation.y = state.clock.elapsedTime * 0.022;
-  });
-
-  return (
-    <group ref={group} rotation={[0, 0.5, 0]}>
-      <lineSegments geometry={edges}>
-        <lineBasicMaterial color={BRAND.accent} transparent opacity={0.13} />
-      </lineSegments>
-    </group>
-  );
-}
-
-/* ==================================================================
-   Chrome ring — one polished element to catch the studio light
-   ================================================================== */
-function ChromeRing({ reducedMotion }: { reducedMotion: boolean }) {
-  const mesh = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    if (!mesh.current || reducedMotion) return;
-    const t = state.clock.elapsedTime;
-    mesh.current.rotation.z = t * 0.06;
-    mesh.current.rotation.x = 1.22 + Math.sin(t * 0.18) * 0.07;
-  });
-
-  return (
-    <mesh ref={mesh} rotation={[1.22, 0, 0]} position={[0, -0.3, 0]}>
-      <torusGeometry args={[3.05, 0.032, 12, 120]} />
-      <meshStandardMaterial color={BRAND.chrome} metalness={0.92} roughness={0.14} envMapIntensity={2.2} />
-    </mesh>
-  );
-}
-
-/* ==================================================================
-   Glass panels — translucent surfaces floating through the room
-   ================================================================== */
-function GlassPanels({ count, reducedMotion }: { count: number; reducedMotion: boolean }) {
+function SidePanels({ count, depth, reducedMotion }: { count: number; depth: number; reducedMotion: boolean }) {
   const group = useRef<THREE.Group>(null);
 
   const panels = useMemo(
     () =>
       Array.from({ length: count }, (_, i) => {
-        const angle = (i / count) * Math.PI * 2 + 0.6;
-        const radius = 3.9 + (i % 3) * 0.85;
+        const side = i % 2 === 0 ? 1 : -1;
         return {
-          position: [Math.cos(angle) * radius, ((i * 41) % 100) / 24 - 2, Math.sin(angle) * radius * 0.62] as [number, number, number],
-          rotation: [Math.sin(i) * 0.22, -angle + Math.PI / 2, Math.cos(i * 1.7) * 0.16] as [number, number, number],
-          size: [1.5 + ((i * 23) % 70) / 60, 2.1 + ((i * 31) % 80) / 55] as [number, number],
-          phase: i * 0.9,
-          tint: i % 3 === 0 ? BRAND.accentBright : "#ffffff",
+          position: [side * (2.5 + (i % 2) * 0.35), -0.35 + ((i * 37) % 100) / 140, -((i + 0.7) / count) * depth * 3.3] as [
+            number,
+            number,
+            number,
+          ],
+          rotation: [0, side * 0.4, 0] as [number, number, number],
+          size: [2.1, 3.2] as [number, number],
+          phase: i * 1.1,
         };
       }),
-    [count],
+    [count, depth],
   );
 
   useFrame((state) => {
     const node = group.current;
     if (!node || reducedMotion) return;
     const t = state.clock.elapsedTime;
-    node.rotation.y = t * 0.016;
-    node.children.forEach((child, index) => {
-      child.position.y = panels[index].position[1] + Math.sin(t * 0.3 + panels[index].phase) * 0.16;
+    node.children.forEach((child, i) => {
+      child.position.y = panels[i].position[1] + Math.sin(t * 0.2 + panels[i].phase) * 0.12;
     });
   });
 
   return (
     <group ref={group}>
-      {panels.map((panel, index) => (
-        <mesh key={index} position={panel.position} rotation={panel.rotation}>
+      {panels.map((panel, i) => (
+        <mesh key={i} position={panel.position} rotation={panel.rotation}>
           <planeGeometry args={panel.size} />
           <meshPhysicalMaterial
-            color={panel.tint}
+            color="#ffffff"
             metalness={0}
-            roughness={0.1}
+            roughness={0.08}
             clearcoat={1}
             clearcoatRoughness={0.1}
             transparent
-            opacity={panel.tint === "#ffffff" ? 0.14 : 0.1}
-            envMapIntensity={1.6}
+            opacity={0.1}
+            envMapIntensity={1.4}
             side={THREE.DoubleSide}
             depthWrite={false}
           />
@@ -261,107 +246,40 @@ function GlassPanels({ count, reducedMotion }: { count: number; reducedMotion: b
 }
 
 /* ==================================================================
-   Orbits — thin technical paths with travelling nodes
+   Energy stream — thin blue motes travelling the length of the
+   corridor, toward camera: the "blue energy" moving through the space.
    ================================================================== */
-function Orbit({
-  radius,
-  tilt,
-  speed,
-  reducedMotion,
-}: {
-  radius: number;
-  tilt: [number, number, number];
-  speed: number;
-  reducedMotion: boolean;
-}) {
-  const node = useRef<THREE.Mesh>(null);
-  const angle = useRef(radius);
-
-  const geometry = useMemo(() => {
-    const points: number[] = [];
-    const steps = 96;
-    for (let i = 0; i <= steps; i++) {
-      const a = (i / steps) * Math.PI * 2;
-      points.push(Math.cos(a) * radius, 0, Math.sin(a) * radius);
-    }
-    const buffer = new THREE.BufferGeometry();
-    buffer.setAttribute("position", new THREE.Float32BufferAttribute(points, 3));
-    return buffer;
-  }, [radius]);
-
-  useEffect(() => () => geometry.dispose(), [geometry]);
-
-  useFrame((_, delta) => {
-    if (!node.current) return;
-    if (!reducedMotion) angle.current += delta * speed;
-    node.current.position.set(Math.cos(angle.current) * radius, 0, Math.sin(angle.current) * radius);
-  });
-
-  return (
-    <group rotation={tilt}>
-      <line>
-        <primitive object={geometry} attach="geometry" />
-        <lineBasicMaterial color={BRAND.accent} transparent opacity={0.26} />
-      </line>
-      <mesh ref={node}>
-        <sphereGeometry args={[0.055, 12, 12]} />
-        <meshBasicMaterial color={BRAND.accent} />
-      </mesh>
-    </group>
-  );
-}
-
-/* ==================================================================
-   Fragments — floating glass, chrome and blue geometry
-   ================================================================== */
-function Fragments({ count, reducedMotion }: { count: number; reducedMotion: boolean }) {
+function EnergyStream({ count, depth, reducedMotion }: { count: number; depth: number; reducedMotion: boolean }) {
   const group = useRef<THREE.Group>(null);
+  const span = depth * 3.4 + 2.4;
 
   const items = useMemo(
     () =>
-      Array.from({ length: count }, (_, i) => {
-        const a = (i / count) * Math.PI * 2;
-        const r = 3.4 + ((i * 37) % 100) / 45;
-        return {
-          position: [Math.cos(a) * r, ((i * 53) % 100) / 22 - 2.2, Math.sin(a) * r * 0.7] as [number, number, number],
-          scale: 0.09 + ((i * 17) % 100) / 850,
-          rotation: [a, a * 1.7, a * 0.4] as [number, number, number],
-          kind: i % 3,
-        };
-      }),
-    [count],
+      Array.from({ length: count }, (_, i) => ({
+        offset: (i / count) * span,
+        x: (i % 2 === 0 ? 1 : -1) * (0.58 + (i % 3) * 0.06),
+        y: -0.2 + Math.sin(i * 1.7) * 0.3,
+      })),
+    [count, span],
   );
 
   useFrame((state) => {
-    if (!group.current || reducedMotion) return;
-    group.current.rotation.y = state.clock.elapsedTime * 0.026;
+    const node = group.current;
+    if (!node) return;
+    const speed = reducedMotion ? 0 : 1.1;
+    node.children.forEach((child, i) => {
+      const item = items[i];
+      const z = (((state.clock.elapsedTime * speed + item.offset) % span) - span) + 1.6;
+      child.position.set(item.x, item.y, z);
+    });
   });
 
   return (
     <group ref={group}>
-      {items.map((item, index) => (
-        <mesh key={index} position={item.position} rotation={item.rotation} scale={item.scale}>
-          <boxGeometry args={[1, 1, 0.22]} />
-          {item.kind === 0 ? (
-            <meshPhysicalMaterial
-              color="#ffffff"
-              metalness={0}
-              roughness={0.08}
-              clearcoat={1}
-              transparent
-              opacity={0.3}
-              envMapIntensity={1.5}
-            />
-          ) : (
-            <meshStandardMaterial
-              color={item.kind === 1 ? BRAND.silver : BRAND.accent}
-              metalness={item.kind === 1 ? 0.68 : 0.2}
-              roughness={item.kind === 1 ? 0.32 : 0.35}
-              envMapIntensity={2.1}
-              transparent
-              opacity={item.kind === 1 ? 0.9 : 0.75}
-            />
-          )}
+      {items.map((item, i) => (
+        <mesh key={i} position={[item.x, item.y, -item.offset]}>
+          <sphereGeometry args={[0.026, 8, 8]} />
+          <meshBasicMaterial color={BRAND.accentBright} transparent opacity={0.75} />
         </mesh>
       ))}
     </group>
@@ -369,7 +287,8 @@ function Fragments({ count, reducedMotion }: { count: number; reducedMotion: boo
 }
 
 /* ==================================================================
-   Particles — tiny blue motes drifting in the light
+   Particles — tiny motes drifting close to camera, the near layer
+   of depth in front of the architecture.
    ================================================================== */
 function Particles({ count, reducedMotion }: { count: number; reducedMotion: boolean }) {
   const points = useRef<THREE.Points>(null);
@@ -378,10 +297,10 @@ function Particles({ count, reducedMotion }: { count: number; reducedMotion: boo
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       const a = Math.random() * Math.PI * 2;
-      const r = 2.6 + Math.random() * 6.6;
+      const r = 1.4 + Math.random() * 5.2;
       positions[i * 3] = Math.cos(a) * r;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 8.5;
-      positions[i * 3 + 2] = Math.sin(a) * r * 0.8;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 6.5;
+      positions[i * 3 + 2] = Math.random() * -12 + 3;
     }
     const buffer = new THREE.BufferGeometry();
     buffer.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -393,29 +312,29 @@ function Particles({ count, reducedMotion }: { count: number; reducedMotion: boo
   useFrame((state) => {
     if (!points.current || reducedMotion) return;
     const t = state.clock.elapsedTime;
-    points.current.rotation.y = t * 0.018;
-    points.current.position.y = Math.sin(t * 0.12) * 0.24;
+    points.current.rotation.y = t * 0.01;
+    points.current.position.y = Math.sin(t * 0.1) * 0.2;
   });
 
   return (
     <points ref={points}>
       <primitive object={geometry} attach="geometry" />
-      <pointsMaterial size={0.036} color={BRAND.accent} transparent opacity={0.4} sizeAttenuation depthWrite={false} />
+      <pointsMaterial size={0.034} color={BRAND.accent} transparent opacity={0.38} sizeAttenuation depthWrite={false} />
     </points>
   );
 }
 
 /* ==================================================================
-   Contact shadow — a soft ellipse on the studio floor
+   Contact shadow — a soft ellipse on the floor of the corridor
    ================================================================== */
-function ContactShadow({ y = -2.7 }: { y?: number }) {
+function ContactShadow({ y = -2.6 }: { y?: number }) {
   const texture = useMemo(() => createShadowTexture(), []);
   useEffect(() => () => texture?.dispose(), [texture]);
   if (!texture) return null;
 
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, y, 0]}>
-      <planeGeometry args={[8, 5.6]} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, y, -2]}>
+      <planeGeometry args={[9, 14]} />
       <meshBasicMaterial map={texture} transparent depthWrite={false} />
     </mesh>
   );
@@ -424,7 +343,15 @@ function ContactShadow({ y = -2.7 }: { y?: number }) {
 /* ==================================================================
    Lighting — bright studio, with a blue key that shifts on scroll
    ================================================================== */
-function StudioLighting({ reducedMotion, scroll }: { reducedMotion: boolean; scroll: React.RefObject<number> }) {
+function StudioLighting({
+  reducedMotion,
+  scroll,
+  boost = false,
+}: {
+  reducedMotion: boolean;
+  scroll: React.RefObject<number>;
+  boost?: boolean;
+}) {
   const key = useRef<THREE.DirectionalLight>(null);
   const rim = useRef<THREE.DirectionalLight>(null);
 
@@ -432,26 +359,24 @@ function StudioLighting({ reducedMotion, scroll }: { reducedMotion: boolean; scr
     if (reducedMotion) return;
     const damp = 1 - Math.pow(0.004, delta);
     const t = Math.min(1, scroll.current);
-    // the key light swings overhead as the page moves, the cyan rim lifts
     if (key.current) {
       key.current.position.x = THREE.MathUtils.lerp(key.current.position.x, 5 - t * 4.5, damp);
       key.current.position.y = THREE.MathUtils.lerp(key.current.position.y, 7 + t * 2.5, damp);
     }
     if (rim.current) {
-      rim.current.intensity = THREE.MathUtils.lerp(rim.current.intensity, 0.9 + t * 0.7, damp);
+      rim.current.intensity = THREE.MathUtils.lerp(rim.current.intensity, (boost ? 1.3 : 0.9) + t * 0.7, damp);
     }
   });
 
   return (
     <>
       <hemisphereLight args={["#ffffff", "#e8eff7", 2.1]} />
-      <ambientLight intensity={0.8} color="#ffffff" />
+      <ambientLight intensity={0.75} color="#ffffff" />
       <directionalLight ref={key} position={[5, 7, 6]} intensity={2.1} color="#ffffff" />
       <directionalLight ref={rim} position={[-6, 2, 3]} intensity={0.9} color={BRAND.accentBright} />
       <directionalLight position={[0, -4, 5]} intensity={0.7} color="#ffffff" />
-      {/* a broad, soft blue wash that gently illuminates the white ceramic */}
-      <pointLight position={[-3.5, 1.5, 4.5]} intensity={22} color={BRAND.accent} distance={20} decay={2} />
-      <pointLight position={[4, -2, 3]} intensity={12} color={BRAND.lavender} distance={16} decay={2} />
+      <pointLight position={[-3, 1.5, 2]} intensity={boost ? 26 : 16} color={BRAND.accent} distance={17} decay={2} />
+      <pointLight position={[2.5, -1.5, -3]} intensity={boost ? 15 : 9} color={BRAND.lavender} distance={14} decay={2} />
     </>
   );
 }
@@ -459,39 +384,50 @@ function StudioLighting({ reducedMotion, scroll }: { reducedMotion: boolean; scr
 /* ==================================================================
    Contents
    ================================================================== */
+/** Framing per device tier and mode — mobile pushes the corridor back and off
+ * to the side so it reads as atmosphere behind the type, not a collision with
+ * it. "return" mirrors the hero framing and starts deeper in the corridor, as
+ * if the visitor is now looking back at the portal from further inside. */
+const FRAMING: Record<"hero" | "return", Record<Tier, { scale: number; position: [number, number, number] }>> = {
+  hero: {
+    mobile: { scale: 0.6, position: [1.5, -0.1, -2.4] },
+    tablet: { scale: 0.66, position: [1.5, -0.2, -1.8] },
+    desktop: { scale: 1, position: [0.55, -0.35, 0] },
+  },
+  return: {
+    mobile: { scale: 0.56, position: [-1.4, -0.05, -3.6] },
+    tablet: { scale: 0.64, position: [-1.35, -0.15, -3.1] },
+    desktop: { scale: 0.92, position: [-0.7, -0.3, -2.6] },
+  },
+};
+
 function Contents({
   settings,
+  tier,
   reducedMotion,
-  ambient,
+  variant,
 }: {
   settings: TierSettings;
+  tier: Tier;
   reducedMotion: boolean;
-  ambient: boolean;
+  variant: SceneVariant;
 }) {
   useStudioEnvironment();
   const scroll = useScrollRef(!reducedMotion);
+  const ambient = variant === "ambient";
+  const boost = variant === "return";
+  const framing = FRAMING[variant === "return" ? "return" : "hero"][tier];
 
   return (
     <>
-      <StudioLighting reducedMotion={reducedMotion} scroll={scroll} />
-      <Rig reducedMotion={reducedMotion} scroll={scroll}>
-        <group scale={ambient ? 0.52 : 1} position={ambient ? [3.6, -0.4, -5] : [0, 0, 0]}>
-          <Artifact segments={settings.segments} reducedMotion={reducedMotion} />
-          <ContactShadow />
-          <ChromeRing reducedMotion={reducedMotion} />
-          {settings.frame ? <ArchitecturalFrame reducedMotion={reducedMotion} /> : null}
-          <GlassPanels count={settings.panels} reducedMotion={reducedMotion} />
-          {Array.from({ length: settings.rings }, (_, i) => (
-            <Orbit
-              key={i}
-              radius={4.1 + i * 1.35}
-              tilt={[1.24 + i * 0.12, i * 0.5, i * -0.24]}
-              speed={0.14 - i * 0.035}
-              reducedMotion={reducedMotion}
-            />
-          ))}
-          <Fragments count={settings.fragments} reducedMotion={reducedMotion} />
+      <StudioLighting reducedMotion={reducedMotion} scroll={scroll} boost={boost} />
+      <Rig reducedMotion={reducedMotion} scroll={scroll} depth={settings.depth}>
+        <group scale={ambient ? 0.46 : framing.scale} position={ambient ? [3.4, -0.2, -1.5] : framing.position}>
+          <Corridor depth={settings.depth} segments={settings.segments} reducedMotion={reducedMotion} />
+          <SidePanels count={settings.panels} depth={settings.depth} reducedMotion={reducedMotion} />
+          <EnergyStream count={settings.streamNodes} depth={settings.depth} reducedMotion={reducedMotion} />
           <Particles count={settings.particles} reducedMotion={reducedMotion} />
+          <ContactShadow />
         </group>
       </Rig>
     </>
@@ -516,15 +452,15 @@ export default function StudioScene({
   return (
     <Canvas
       dpr={[1, settings.dpr]}
-      camera={{ position: [0, 0, ambient ? 12 : 9.3], fov: 40, near: 0.1, far: 46 }}
+      camera={{ position: [0, 0.35, ambient ? 11.5 : 8.6], fov: 42, near: 0.1, far: 52 }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       frameloop={reducedMotion ? "demand" : "always"}
       style={{ position: "absolute", inset: 0 }}
     >
-      {/* the room fades to white, never to black */}
-      <fog attach="fog" args={["#ffffff", 13, 34]} />
+      {/* the corridor fades to white, never to black */}
+      <fog attach="fog" args={["#fbfdff", 9, 27]} />
       <Suspense fallback={null}>
-        <Contents settings={settings} reducedMotion={reducedMotion} ambient={ambient} />
+        <Contents settings={settings} tier={tier} reducedMotion={reducedMotion} variant={variant} />
       </Suspense>
     </Canvas>
   );

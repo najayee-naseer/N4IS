@@ -369,49 +369,6 @@
 .vbar { height: 3px; border-radius: 2px; background: var(--surface-3); }
 .vbar--accent { background: var(--brand-gradient); }
 
-/* BookMySalon — booking interface */
-.visual--bookmysalon .visual__glow { background: radial-gradient(circle, rgba(var(--accent-rgb), 0.3) 0%, transparent 68%); }
-.visual--bookmysalon .vpanel--app {
-  width: 34%;
-  min-width: 104px;
-  aspect-ratio: 9 / 15.5;
-  left: 16%;
-  top: 15%;
-  border-radius: 12px;
-  padding: 0.55rem 0.5rem;
-}
-.card:hover .visual--bookmysalon .vpanel--app { transform: translateY(-6px) rotate(-1.2deg); }
-.visual--bookmysalon .vslots {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3px;
-  margin-top: 0.15rem;
-}
-.visual--bookmysalon .vslots span {
-  height: 9px;
-  border-radius: 3px;
-  border: 1px solid var(--line-2);
-  background: var(--surface-2);
-}
-.visual--bookmysalon .vslots span[data-on="true"] { border-color: transparent; background: var(--accent); }
-.visual--bookmysalon .vpanel--confirm {
-  width: 38%;
-  min-width: 118px;
-  right: 12%;
-  top: 30%;
-}
-.card:hover .visual--bookmysalon .vpanel--confirm { transform: translate(4px, -10px) rotate(1.4deg); }
-.visual--bookmysalon .vpanel--chip {
-  right: 17%;
-  top: 16%;
-  padding: 0.4rem 0.6rem;
-  border-radius: var(--radius-pill);
-  background: var(--accent-soft);
-  border-color: var(--accent-line);
-  box-shadow: var(--shadow-sm);
-}
-.card:hover .visual--bookmysalon .vpanel--chip { transform: translate(-6px, -4px); }
-
 /* AI Interview & Viva Engine — reasoning system */
 .visual--ai-interview-viva-engine .visual__glow { background: radial-gradient(circle, rgba(var(--cyan-rgb), 0.3) 0%, transparent 68%); }
 .vcore {

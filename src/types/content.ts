@@ -3,6 +3,7 @@ export type ProjectStatus =
   | "PROTOTYPE"
   | "IN DEVELOPMENT"
   | "TESTING"
+  | "BUILT"
   | "LIVE"
   | "ARCHIVED";
 
@@ -34,6 +35,9 @@ export interface Project {
   /** Optional real imagery. When null the procedural product visual is used. */
   image: string | null;
   heroImage: string | null;
+  /** The real pixel dimensions of `heroImage`, so it never gets stretched off its true aspect ratio. */
+  heroImageWidth?: number;
+  heroImageHeight?: number;
   /** Real build screenshots, shown as a gallery on the detail page. */
   gallery?: ProjectShot[];
   /** The technologies the project is actually built with. Never guessed. */

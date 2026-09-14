@@ -49,7 +49,7 @@ function stop() {
   window.removeEventListener("resize", schedule);
 }
 
-export type AtmosphereTone = "studio" | "calm" | "warmlight";
+export type AtmosphereTone = "studio" | "calm" | "warmlight" | "quiet" | "signal";
 
 export function Atmosphere({
   tone = "studio",

@@ -1,5 +1,4 @@
-import { Atmosphere } from "@/components/atmosphere/atmosphere";
-import { StudioObject } from "@/components/3d/studio-object";
+import { StudioBackdrop } from "@/components/3d/studio-backdrop";
 import { ButtonLink } from "@/components/ui/arrow-link";
 import { site } from "@/data/site";
 
@@ -10,14 +9,15 @@ const FACTS = [
 ] as const;
 
 /**
- * Three depth planes: the atmosphere behind, the light fields and translucent
- * geometry in the middle, the artifact and its annotations in front. The
- * headline never competes with the object — it owns the left column outright.
+ * The hero is one continuous environment, not a headline beside an object.
+ * The corridor of arches — derived from the logo's "n" — runs full-bleed
+ * behind everything: atmosphere, light and depth first, typography laid
+ * directly over the space rather than confined to a column beside it.
  */
 export function Hero() {
   return (
     <section className="hero" aria-labelledby="hero-title">
-      <Atmosphere tone="studio" rules />
+      <StudioBackdrop tone="studio" variant="hero" eager />
 
       <div className="shell hero__inner">
         <div className="hero__content">
@@ -57,10 +57,6 @@ export function Hero() {
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="hero__visual">
-          <StudioObject />
         </div>
       </div>
 

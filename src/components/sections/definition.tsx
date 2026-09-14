@@ -3,12 +3,6 @@ import { Atmosphere } from "@/components/atmosphere/atmosphere";
 import { Reveal } from "@/components/ui/reveal";
 import { principles, process } from "@/data/site";
 
-const LAYERS = [
-  { label: "Interface", note: "What a person actually touches" },
-  { label: "System", note: "The engineering underneath it" },
-  { label: "Idea", note: "The question that started it" },
-] as const;
-
 export function Definition() {
   return (
     <section className="section definition-section" aria-labelledby="definition-title" id="what-is-n4is">
@@ -21,16 +15,13 @@ export function Definition() {
               <span className="label--accent">02</span> Definition
             </p>
             <h2 className="definition__title" id="definition-title">
-              What is
+              Ideas are only
               <br />
-              N4IS?
+              the beginning.
             </h2>
             <p className="definition__statement">
               <b>N4IS is an independent technology studio</b>{" "}
-              <span>
-                exploring ideas, engineering products and experimenting with systems that can exist in the
-                real world.
-              </span>
+              <span>building digital products, intelligent systems and experiments for a smarter tomorrow.</span>
             </p>
             <p className="lead">Not an agency. Not a portfolio. A studio with its own project list.</p>
 
@@ -45,21 +36,6 @@ export function Definition() {
                 ))}
               </div>
             </div>
-          </Reveal>
-
-          {/* Every project is the same three layers stacked — this is that idea, built. */}
-          <Reveal className="strata" variant="fade" delay={140}>
-            <div className="strata__scene" role="img" aria-label="Three stacked layers: interface, system and the idea beneath it">
-              <span className="strata__glow" />
-              {LAYERS.map((layer, index) => (
-                <span className={`strata__plate strata__plate--${index + 1}`} key={layer.label} data-index={`0${index + 1}`}>
-                  <b>{layer.label}</b>
-                  <i>{layer.note}</i>
-                </span>
-              ))}
-              <span className="strata__axis" />
-            </div>
-            <p className="annotation strata__anno">Every project · three layers</p>
           </Reveal>
         </div>
 

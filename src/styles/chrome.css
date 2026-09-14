@@ -346,7 +346,11 @@
   left: 0;
   z-index: 400;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
 }
+/* stays hidden at its default centre position until the pointer actually moves */
+.cursor[data-awake="true"] { opacity: 1; }
 .cursor__dot,
 .cursor__ring {
   position: absolute;

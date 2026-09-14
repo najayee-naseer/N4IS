@@ -210,6 +210,18 @@
 .atmo--warmlight .atmo__light--key { right: auto; left: -12vw; top: -18vh; }
 .atmo--warmlight .atmo__light--rim { left: auto; right: -14vw; bottom: -18vh; }
 
+/* quiet: the human moment — light without the technical layers */
+.atmo--quiet .atmo__light--key { --o: 0.24; --blur: 140px; }
+.atmo--quiet .atmo__light--rim { --o: 0.2; --blur: 130px; }
+.atmo--quiet .atmo__light--fill { --o: 0.3; }
+.atmo--quiet .atmo__beam { opacity: 0.22; }
+
+/* signal: the portal returns — the strongest blue light on the page */
+.atmo--signal .atmo__light--key { --o: 0.7; --blur: 100px; }
+.atmo--signal .atmo__light--rim { --o: 0.62; --blur: 92px; }
+.atmo--signal .atmo__light--fill { --o: 0.5; }
+.atmo--signal .atmo__beam { opacity: 0.85; }
+
 @media (max-width: 760px) {
   .atmo__form--slab,
   .atmo__rules { display: none; }
