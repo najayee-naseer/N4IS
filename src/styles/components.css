@@ -677,25 +677,3 @@
   .form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.15rem; }
 }
 
-/* ============================================================
-   BACKDROP — a page-level environment wrapper.
-   The light layers themselves now live in atmosphere.css; this
-   only positions the wrapper, the ambient canvas and the markers.
-   ============================================================ */
-.backdrop {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-.backdrop--fixed { position: fixed; }
-.backdrop__canvas { position: absolute; inset: 0; }
-
-.backdrop__marker { position: absolute; opacity: 0.9; }
-.backdrop__marker--a { left: clamp(0.6rem, 1.4vw, 1.6rem); top: 26vh; }
-.backdrop__marker--b { right: clamp(0.6rem, 1.4vw, 1.6rem); bottom: 16vh; }
-
-@media (max-width: 1279px) {
-  .backdrop__marker { display: none; }
-}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { StudioBackdrop } from "@/components/3d/studio-backdrop";
+import { Environment } from "@/components/environment/environment";
 import { Reveal } from "@/components/ui/reveal";
 import { Specimen } from "@/components/lab/specimen";
 import { experiments, getExperiment } from "@/data/experiments";
@@ -29,7 +29,7 @@ export default async function LabDetailPage({ params }: { params: Promise<{ slug
 
   return (
     <main id="main-content" className="page">
-      <StudioBackdrop fixed variant="ambient" markers={[`N4IS / ${experiment.number}`, experiment.status]} scene={false} />
+      <Environment station="quiet" />
 
       <div className="shell" style={{ position: "relative", zIndex: 1 }}>
         <Link href="/lab" className="back-link" data-cursor="link">

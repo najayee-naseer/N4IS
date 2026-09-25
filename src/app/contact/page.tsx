@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { StudioBackdrop } from "@/components/3d/studio-backdrop";
+import { Environment } from "@/components/environment/environment";
 import { Reveal } from "@/components/ui/reveal";
 import { ContactForm } from "@/components/contact/contact-form";
 import { process } from "@/data/site";
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main id="main-content" className="page">
-      <StudioBackdrop fixed variant="ambient" markers={["N4IS / CONTACT", "LET'S BUILD"]} />
+      <Environment station="page" />
 
       <div className="shell" style={{ position: "relative", zIndex: 1 }}>
         <header className="page-hero">

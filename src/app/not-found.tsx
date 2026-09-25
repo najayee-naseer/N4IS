@@ -1,10 +1,10 @@
 import { ButtonLink } from "@/components/ui/arrow-link";
-import { StudioBackdrop } from "@/components/3d/studio-backdrop";
+import { Environment } from "@/components/environment/environment";
 
 export default function NotFound() {
   return (
     <main id="main-content" className="page">
-      <StudioBackdrop fixed variant="ambient" markers={["N4IS / 404", "NOTHING HERE"]} scene={false} />
+      <Environment station="quiet" />
       <div className="shell" style={{ position: "relative", zIndex: 1 }}>
         <div className="notfound">
           <p className="label label-rule">Error 404</p>

@@ -1,4 +1,3 @@
-import { StudioBackdrop } from "@/components/3d/studio-backdrop";
 import { ButtonLink } from "@/components/ui/arrow-link";
 import { site } from "@/data/site";
 
@@ -16,9 +15,7 @@ const FACTS = [
  */
 export function Hero() {
   return (
-    <section className="hero" aria-labelledby="hero-title">
-      <StudioBackdrop tone="studio" variant="hero" eager />
-
+    <section className="hero" data-env="hero" aria-labelledby="hero-title">
       <div className="shell hero__inner">
         <div className="hero__content">
           <p className="label label-rule">{site.name} / Digital technology studio</p>
@@ -60,9 +57,6 @@ export function Hero() {
         </div>
       </div>
 
-      <span className="annotation annotation--vertical hero__anno hero__anno--system">N4IS / System 01</span>
-      <span className="annotation annotation--dot hero__anno hero__anno--state">Core / Active</span>
-      <span className="annotation hero__anno hero__anno--order">Build · Experiment · Ship</span>
 
       <div className="hero__scroll" aria-hidden="true">
         <i />

@@ -1,12 +1,10 @@
 import { Fragment } from "react";
-import { Atmosphere } from "@/components/atmosphere/atmosphere";
 import { Reveal } from "@/components/ui/reveal";
 import { principles, process } from "@/data/site";
 
 export function Definition() {
   return (
-    <section className="section definition-section" aria-labelledby="definition-title" id="what-is-n4is">
-      <Atmosphere tone="calm" beam={false} seam />
+    <section className="section definition-section" data-env="definition" aria-labelledby="definition-title" id="what-is-n4is">
 
       <div className="shell definition-section__inner">
         <div className="definition">

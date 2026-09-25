@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Atmosphere } from "@/components/atmosphere/atmosphere";
 import { Reveal } from "@/components/ui/reveal";
 import { ArrowLink } from "@/components/ui/arrow-link";
 
@@ -10,8 +9,7 @@ import { ArrowLink } from "@/components/ui/arrow-link";
  */
 export function FounderTeaser() {
   return (
-    <section className="section founder-section" aria-labelledby="founder-teaser-title">
-      <Atmosphere tone="quiet" beam={false} forms={false} grid={false} />
+    <section className="section founder-section" data-env="founder" aria-labelledby="founder-teaser-title">
       <div className="shell">
         <div className="founder-hero">
           <Reveal variant="wipe">

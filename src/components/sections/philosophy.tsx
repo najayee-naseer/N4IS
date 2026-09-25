@@ -14,7 +14,7 @@ const LAYERS = [
  */
 export function Philosophy() {
   return (
-    <section className="philosophy" aria-labelledby="philosophy-title">
+    <section className="philosophy" data-env="philosophy" aria-labelledby="philosophy-title">
       <div className="shell philosophy__inner">
         <p className="label label-rule">
           <span className="label--accent">03</span> Philosophy

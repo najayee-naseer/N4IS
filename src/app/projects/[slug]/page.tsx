@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { StudioBackdrop } from "@/components/3d/studio-backdrop";
+import { Environment } from "@/components/environment/environment";
 import { ProjectVisual } from "@/components/projects/project-visual";
 import { ProjectGallery } from "@/components/projects/project-gallery";
 import { Reveal } from "@/components/ui/reveal";
@@ -32,7 +32,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   return (
     <main id="main-content" className="page">
-      <StudioBackdrop fixed variant="ambient" markers={[`N4IS / ${project.number}`, project.status]} scene={false} />
+      <Environment station="quiet" />
 
       <div className="shell" style={{ position: "relative", zIndex: 1 }}>
         <Link href="/projects" className="back-link" data-cursor="link">

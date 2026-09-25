@@ -1,6 +1,5 @@
 import { Reveal } from "@/components/ui/reveal";
 import { BrandMark } from "@/components/ui/brand-mark";
-import { Atmosphere } from "@/components/atmosphere/atmosphere";
 import { ProjectVisual } from "@/components/projects/project-visual";
 import { featuredProjects } from "@/data/projects";
 
@@ -17,8 +16,7 @@ const NODE_X = [12.5, 37.5, 62.5, 87.5];
  */
 export function Ecosystem() {
   return (
-    <section className="section ecosystem-section" aria-labelledby="ecosystem-title">
-      <Atmosphere tone="calm" beam={false} />
+    <section className="section ecosystem-section" data-env="ecosystem" aria-labelledby="ecosystem-title">
       <div className="shell">
         <p className="label label-rule">
           <span className="label--accent">04</span> The N4IS ecosystem

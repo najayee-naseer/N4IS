@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { StudioBackdrop } from "@/components/3d/studio-backdrop";
+import { Environment } from "@/components/environment/environment";
 import { PageHero } from "@/components/ui/page-hero";
 import { Reveal } from "@/components/ui/reveal";
 import { ArrowLink } from "@/components/ui/arrow-link";
@@ -17,7 +17,7 @@ const MODES = ["Experiments", "Prototypes", "Ideas", "Research"];
 export default function LabPage() {
   return (
     <main id="main-content" className="page">
-      <StudioBackdrop fixed variant="ambient" markers={["N4IS / LAB", "EXPERIMENTAL DIVISION"]} />
+      <Environment station="page" />
 
       <div className="shell" style={{ position: "relative", zIndex: 1 }}>
         <PageHero

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { StudioBackdrop } from "@/components/3d/studio-backdrop";
+import { Environment } from "@/components/environment/environment";
 import { PageHero } from "@/components/ui/page-hero";
 import { Reveal } from "@/components/ui/reveal";
 import { ProjectPanel } from "@/components/projects/project-panel";
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function WorkPage() {
   return (
     <main id="main-content" className="page work-page">
-      <StudioBackdrop fixed variant="ambient" markers={["N4IS / Work", `${activeProjects.length} Active`]} />
+      <Environment station="page" />
 
       <div className="shell" style={{ position: "relative", zIndex: 1 }}>
         <PageHero

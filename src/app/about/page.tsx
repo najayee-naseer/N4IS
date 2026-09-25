@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import type { Metadata } from "next";
-import { StudioBackdrop } from "@/components/3d/studio-backdrop";
+import { Environment } from "@/components/environment/environment";
 import { PageHero } from "@/components/ui/page-hero";
 import { Reveal } from "@/components/ui/reveal";
 import { CtaBand } from "@/components/sections/cta-band";
@@ -42,7 +42,7 @@ const STATEMENTS = [
 export default function AboutPage() {
   return (
     <main id="main-content" className="page">
-      <StudioBackdrop fixed variant="ambient" markers={["N4IS / MANIFESTO", "IDEAS → REAL WORLD"]} />
+      <Environment station="page" />
 
       <div className="shell" style={{ position: "relative", zIndex: 1 }}>
         <PageHero

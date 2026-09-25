@@ -1,3 +1,4 @@
+import { Environment } from "@/components/environment/environment";
 import { Hero } from "@/components/sections/hero";
 import { Definition } from "@/components/sections/definition";
 import { Philosophy } from "@/components/sections/philosophy";
@@ -10,6 +11,7 @@ import { CtaBand } from "@/components/sections/cta-band";
 export default function HomePage() {
   return (
     <main id="main-content">
+      <Environment journey station="hero" />
       <Hero />
       <Definition />
       <Philosophy />

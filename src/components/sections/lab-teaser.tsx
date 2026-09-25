@@ -1,6 +1,5 @@
 import { Fragment } from "react";
 import { Reveal } from "@/components/ui/reveal";
-import { Atmosphere } from "@/components/atmosphere/atmosphere";
 import { SectionHead } from "@/components/ui/section-head";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { Specimen } from "@/components/lab/specimen";
@@ -10,8 +9,7 @@ const VOCAB = ["EXPERIMENT", "PROTOTYPE", "RESEARCH", "TEST", "LEARN", "REPEAT"]
 
 export function LabTeaser() {
   return (
-    <section className="section section--tight lab-teaser" aria-labelledby="lab-teaser-title">
-      <Atmosphere tone="calm" beam={false} forms={false} />
+    <section className="section section--tight lab-teaser" data-env="lab" aria-labelledby="lab-teaser-title">
       <div className="shell">
         <SectionHead index="06" label="N4IS Lab" title={<span id="lab-teaser-title">Experiments in progress</span>}>
           <p className="lead">

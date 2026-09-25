@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { StudioBackdrop } from "@/components/3d/studio-backdrop";
+import { Environment } from "@/components/environment/environment";
 import { Reveal } from "@/components/ui/reveal";
 import { ArrowLink, ButtonLink } from "@/components/ui/arrow-link";
 import { SectionHead } from "@/components/ui/section-head";
@@ -47,7 +47,7 @@ const NOTES = [
 export default function FounderPage() {
   return (
     <main id="main-content" className="page">
-      <StudioBackdrop fixed variant="ambient" markers={["N4IS / FOUNDER", "PERSONALLY BUILT"]} scene={false} />
+      <Environment station="quiet" />
 
       <div className="shell" style={{ position: "relative", zIndex: 1 }}>
         <section className="founder-hero section section--tight" aria-labelledby="founder-title">

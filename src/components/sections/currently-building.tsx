@@ -1,5 +1,4 @@
 import { Reveal } from "@/components/ui/reveal";
-import { Atmosphere } from "@/components/atmosphere/atmosphere";
 import { SectionHead } from "@/components/ui/section-head";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { ProjectPanel } from "@/components/projects/project-panel";
@@ -19,8 +18,7 @@ export function CurrentlyBuilding() {
   const ordered = lead ? [lead, ...featuredProjects.filter((project) => project !== lead)] : featuredProjects;
 
   return (
-    <section className="section building" aria-labelledby="currently-building-title">
-      <Atmosphere tone="studio" beam={false} forms={false} />
+    <section className="section building" data-env="projects" aria-labelledby="currently-building-title">
       <div className="shell">
         <SectionHead
           index="05"

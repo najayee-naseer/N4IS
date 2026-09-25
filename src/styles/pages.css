@@ -44,14 +44,6 @@
   padding-bottom: 4rem;
   overflow: hidden;
 }
-/* on narrow screens the corridor recedes into atmosphere behind the type,
-   rather than competing with it for space */
-@media (max-width: 1023px) {
-  .hero .backdrop__canvas { opacity: 0.78; }
-}
-@media (max-width: 640px) {
-  .hero .backdrop__canvas { opacity: 0.6; }
-}
 .hero__inner {
   position: relative;
   z-index: 2;
@@ -147,28 +139,6 @@
   .hero__scroll { display: flex; }
 }
 
-/* --- hero annotations: architectural marks, not a HUD ---------- */
-.hero__anno { position: absolute; z-index: 2; }
-.hero__anno--system { left: clamp(0.6rem, 1.6vw, 1.9rem); top: 30vh; }
-.hero__anno--state { right: clamp(1rem, 4vw, 3.6rem); top: calc(var(--header-h) + 4.5rem); }
-.hero__anno--order { right: var(--gutter); bottom: 1.85rem; }
-@media (max-width: 1279px) {
-  .hero__anno--system,
-  .hero__anno--order { display: none; }
-}
-@media (max-width: 900px) {
-  .hero__anno { display: none; }
-}
-
-/* --- ambient canvases stay behind the reading line ------------- */
-.page .backdrop__canvas {
-  opacity: 0.58;
-  mask-image: linear-gradient(100deg, transparent 0%, rgba(0, 0, 0, 0.25) 38%, #000 72%);
-  -webkit-mask-image: linear-gradient(100deg, transparent 0%, rgba(0, 0, 0, 0.25) 38%, #000 72%);
-}
-@media (max-width: 900px) {
-  .page .backdrop__canvas { opacity: 0.4; }
-}
 
 /* ============================================================
    HOME — WHAT IS N4IS
@@ -486,18 +456,6 @@
     radial-gradient(120% 160% at 100% 0%, rgba(var(--accent-rgb), 0.12), transparent 62%),
     linear-gradient(180deg, #ffffff 0%, var(--accent-tint) 100%);
   box-shadow: var(--shadow-sm);
-}
-.cta-band::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(90% 90% at 100% 0%, #000, transparent 70%);
-  -webkit-mask-image: radial-gradient(90% 90% at 100% 0%, #000, transparent 70%);
-  pointer-events: none;
 }
 .cta-band > * { position: relative; z-index: 1; }
 .cta-band__title { font-size: clamp(1.9rem, 5.5vw, 4rem); text-transform: uppercase; line-height: 0.9; }
@@ -1000,6 +958,15 @@
   padding-block: clamp(3rem, 8vw, 6rem);
 }
 .cta-portal__inner { position: relative; z-index: 2; width: 100%; }
+/* the hall fades into the page's ground before the footer, rather than stopping at a line */
+.cta-portal::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 28%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), var(--bg));
+  pointer-events: none;
+}
 .cta-portal__copy {
   display: flex;
   flex-direction: column;
@@ -1016,14 +983,8 @@
   line-height: 0.94;
 }
 .cta-portal__lead { max-width: 34ch; }
-.cta-portal__anno {
-  right: var(--gutter);
-  bottom: 1.85rem;
-  z-index: 2;
-}
 @media (max-width: 760px) {
   .cta-portal__copy { margin-left: 0; text-align: left; align-items: flex-start; }
-  .cta-portal .backdrop__canvas { opacity: 0.7; }
 }
 
 /* ============================================================
@@ -1039,16 +1000,6 @@
   border-radius: 50%;
   background: radial-gradient(circle, rgba(var(--accent-rgb), 0.22) 0%, rgba(var(--cyan-rgb), 0.09) 46%, transparent 70%);
   filter: blur(40px);
-  pointer-events: none;
-}
-.cta-band__ring {
-  position: absolute;
-  right: 4%;
-  bottom: -46%;
-  width: clamp(12rem, 26vw, 26rem);
-  aspect-ratio: 1;
-  border: 1px solid rgba(var(--accent-rgb), 0.16);
-  border-radius: 50%;
   pointer-events: none;
 }
 

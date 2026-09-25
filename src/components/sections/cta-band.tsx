@@ -1,6 +1,5 @@
 import { Reveal } from "@/components/ui/reveal";
 import { ButtonLink } from "@/components/ui/arrow-link";
-import { StudioBackdrop } from "@/components/3d/studio-backdrop";
 
 /**
  * Two forms of the same close. `portal` is the homepage's ending: the
@@ -22,8 +21,7 @@ export function CtaBand({
 }) {
   if (portal) {
     return (
-      <section className="cta-portal" aria-labelledby="cta-portal-title">
-        <StudioBackdrop tone="signal" variant="return" />
+      <section className="cta-portal" data-env="return" aria-labelledby="cta-portal-title">
         <div className="shell cta-portal__inner">
           <Reveal className="cta-portal__copy">
             <p className="label label-rule">{label}</p>
@@ -34,7 +32,6 @@ export function CtaBand({
             <ButtonLink href="/contact">Let&apos;s build</ButtonLink>
           </Reveal>
         </div>
-        <span className="annotation cta-portal__anno">N4IS / Return</span>
       </section>
     );
   }
@@ -44,7 +41,6 @@ export function CtaBand({
       <div className="shell">
         <Reveal className="cta-band">
           <span className="cta-band__glow" aria-hidden="true" />
-          <span className="cta-band__ring" aria-hidden="true" />
           <p className="label label--accent">{label}</p>
           <h2 className="cta-band__title">{title}</h2>
           <p className="lead">{copy}</p>
