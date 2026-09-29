@@ -12,7 +12,7 @@ const LAYERS = [
  * increasing depth and weight, converging into the brand mark. N4IS
  * doesn't build technology for its own sake — this is that idea, staged.
  */
-export function Philosophy() {
+export function Philosophy({ statement }: { statement: string }) {
   return (
     <section className="philosophy" data-env="philosophy" aria-labelledby="philosophy-title">
       <div className="shell philosophy__inner">
@@ -41,10 +41,7 @@ export function Philosophy() {
           <span className="philosophy__mark" aria-hidden="true">
             <BrandMark variant="monogram" alt="" sizes="56px" />
           </span>
-          <p>
-            N4IS doesn&apos;t build technology for its own sake. It connects technology, people and the
-            real world into things that actually work.
-          </p>
+          <p>{statement}</p>
         </Reveal>
       </div>
     </section>

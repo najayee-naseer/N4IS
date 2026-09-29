@@ -126,7 +126,8 @@
 .status--quiet i { background: var(--text-3); box-shadow: none; animation: none; }
 
 .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.tags span {
+.tags span,
+.tags a {
   padding: 0.3rem 0.62rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
@@ -677,3 +678,21 @@
   .form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.15rem; }
 }
 
+
+/* an experiment with an uploaded cover uses the same plate frame */
+.specimen--photo { background: var(--surface-2); }
+.specimen--photo .specimen__index,
+.specimen--photo .specimen__status {
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.86);
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+}
+
+/* a project's own logo, above its title */
+.detail__logo {
+  display: block;
+  width: auto;
+  height: clamp(2.5rem, 5vw, 3.5rem);
+  margin-bottom: 1rem;
+}

@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { activeProjects } from "@/data/projects";
-import { navigation, process, site } from "@/data/site";
+import { navigation, site } from "@/data/site";
+import { getProjects, getSettings } from "@/lib/cms/queries";
 import { BrandMark } from "@/components/ui/brand-mark";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const [projects, settings] = await Promise.all([getProjects(), getSettings()]);
+
   return (
     <footer className="footer">
       <div className="shell">
@@ -30,7 +32,7 @@ export function SiteFooter() {
           <div className="footer__col">
             <h3>Currently building</h3>
             <div className="footer__list">
-              {activeProjects.map((project) => (
+              {projects.map((project) => (
                 <Link key={project.slug} href={`/projects/${project.slug}`} data-cursor="link">
                   {project.name}
                 </Link>
@@ -44,15 +46,28 @@ export function SiteFooter() {
               <Link href="/contact" data-cursor="link">
                 Start a conversation ↗
               </Link>
-              <span>Social destinations will be listed here once they are ready to share.</span>
+              {settings.contactEmail ? (
+                <a href={`mailto:${settings.contactEmail}`} data-cursor="link">
+                  {settings.contactEmail}
+                </a>
+              ) : null}
+              {settings.socialLinks.length > 0 ? (
+                settings.socialLinks.map((link) => (
+                  <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer" data-cursor="link">
+                    {link.label} ↗
+                  </a>
+                ))
+              ) : (
+                <span>Social destinations will be listed here once they are ready to share.</span>
+              )}
             </div>
           </div>
         </div>
 
         <div className="footer__base">
-          <p className="label">{process.join(" · ")}</p>
+          <p className="label">{settings.content.process.join(" · ")}</p>
           <p className="label">
-            © {new Date().getFullYear()} {site.name} · {site.domain}
+            © {new Date().getFullYear()} {settings.siteName} · {site.domain}
           </p>
         </div>
       </div>

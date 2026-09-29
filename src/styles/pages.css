@@ -1132,3 +1132,20 @@
   filter: blur(10px);
   pointer-events: none;
 }
+
+/* ============================================================
+   CMS-driven additions — only rendered when the content exists
+   ============================================================ */
+.about-figure {
+  margin: 0 0 clamp(2rem, 5vw, 3.5rem);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.about-figure img { width: 100%; height: auto; }
+
+.contact-details { display: grid; gap: 0.9rem; margin: 0 0 1rem; }
+.contact-details div { display: grid; gap: 0.2rem; }
+.contact-details dd { margin: 0; font-size: 1.02rem; }
+.contact-details a { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent-line); text-underline-offset: 3px; }
+.tags a { color: inherit; text-decoration: none; }

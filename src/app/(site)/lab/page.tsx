@@ -4,8 +4,8 @@ import { Environment } from "@/components/environment/environment";
 import { PageHero } from "@/components/ui/page-hero";
 import { Reveal } from "@/components/ui/reveal";
 import { ArrowLink } from "@/components/ui/arrow-link";
-import { Specimen } from "@/components/lab/specimen";
-import { experiments } from "@/data/experiments";
+import { LabPlate } from "@/components/lab/lab-plate";
+import { getExperiments } from "@/lib/cms/queries";
 
 export const metadata: Metadata = {
   title: "Lab",
@@ -14,7 +14,9 @@ export const metadata: Metadata = {
 
 const MODES = ["Experiments", "Prototypes", "Ideas", "Research"];
 
-export default function LabPage() {
+export default async function LabPage() {
+  const experiments = await getExperiments();
+
   return (
     <main id="main-content" className="page">
       <Environment station="page" />
@@ -39,7 +41,7 @@ export default function LabPage() {
           {experiments.map((experiment, index) => (
             <Reveal key={experiment.slug} delay={index * 90}>
               <article className="lab-card">
-                <Specimen index={index} number={experiment.number} status={experiment.status} />
+                <LabPlate experiment={experiment} index={index} />
                 <div className="lab-card__body">
                   <p className="label label--accent">
                     {experiment.category} — {experiment.status}

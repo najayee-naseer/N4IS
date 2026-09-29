@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Environment } from "@/components/environment/environment";
 import { Reveal } from "@/components/ui/reveal";
 import { ContactForm } from "@/components/contact/contact-form";
-import { process } from "@/data/site";
+import { getSettings } from "@/lib/cms/queries";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -10,7 +10,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getSettings();
+  const { process } = settings.content;
+  const details = [
+    settings.contactEmail ? { label: "Email", value: settings.contactEmail, href: `mailto:${settings.contactEmail}` } : null,
+    settings.contactPhone ? { label: "Phone", value: settings.contactPhone, href: `tel:${settings.contactPhone.replace(/[^+\d]/g, "")}` } : null,
+    settings.location ? { label: "Location", value: settings.location, href: null } : null,
+  ].filter(Boolean) as { label: string; value: string; href: string | null }[];
+
   return (
     <main id="main-content" className="page">
       <Environment station="page" />
@@ -43,6 +51,29 @@ export default function ContactPage() {
           </Reveal>
 
           <Reveal className="contact-aside" delay={120}>
+            {details.length > 0 || settings.socialLinks.length > 0 ? (
+              <div className="contact-card">
+                <p className="label label--accent">Reach the studio</p>
+                <dl className="contact-details">
+                  {details.map((item) => (
+                    <div key={item.label}>
+                      <dt className="label">{item.label}</dt>
+                      <dd>{item.href ? <a href={item.href} data-cursor="link">{item.value}</a> : item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                {settings.socialLinks.length > 0 ? (
+                  <div className="tags">
+                    {settings.socialLinks.map((link) => (
+                      <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer" data-cursor="link">
+                        {link.label} ↗
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
             <div className="contact-card">
               <p className="label label--accent">What happens next</p>
               <h2 className="h3">A real reply, not a funnel.</h2>

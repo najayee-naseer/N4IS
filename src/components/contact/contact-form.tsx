@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useActionState, useEffect, useRef, useState, type FormEvent } from "react";
+import { sendContactMessage, type ContactState } from "@/app/(site)/contact/actions";
 
 type Fields = "name" | "email" | "subject" | "message";
 type Errors = Partial<Record<Fields, string>>;
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/** Instant feedback in the browser; the server action validates again and is the one that counts. */
 function validate(data: Record<Fields, string>): Errors {
   const errors: Errors = {};
   if (data.name.trim().length < 2) errors.name = "Please enter your name";
@@ -17,43 +19,41 @@ function validate(data: Record<Fields, string>): Errors {
 }
 
 export function ContactForm() {
-  const [errors, setErrors] = useState<Errors>({});
-  const [prepared, setPrepared] = useState(false);
+  const [state, action, pending] = useActionState<ContactState, FormData>(sendContactMessage, { status: "idle" });
+  const [local, setLocal] = useState<Errors>({});
+  const [dismissed, setDismissed] = useState(false);
+  const form = useRef<HTMLFormElement>(null);
+
+  const errors: Errors = { ...(state.status === "invalid" ? state.errors : {}), ...local };
+
+  useEffect(() => {
+    if (state.status === "sent") form.current?.reset();
+    setDismissed(false);
+  }, [state]);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const data = {
+    const formData = new FormData(event.currentTarget);
+    const found = validate({
       name: String(formData.get("name") ?? ""),
       email: String(formData.get("email") ?? ""),
       subject: String(formData.get("subject") ?? ""),
       message: String(formData.get("message") ?? ""),
-    };
-
-    const found = validate(data);
-    setErrors(found);
-
+    });
+    setLocal(found);
     if (Object.keys(found).length > 0) {
-      const first = form.querySelector<HTMLElement>('[data-invalid="true"] input, [data-invalid="true"] textarea');
+      event.preventDefault();
+      const first = event.currentTarget.querySelector<HTMLElement>('[data-invalid="true"] input, [data-invalid="true"] textarea');
       first?.focus();
-      return;
     }
-
-    setPrepared(true);
-    form.reset();
   }
 
-  if (prepared) {
+  if (state.status === "sent" && !dismissed) {
     return (
       <div className="form-success" role="status">
-        <p className="label label--accent">Message prepared</p>
+        <p className="label label--accent">Message sent</p>
         <h2 className="h3">Thank you.</h2>
-        <p className="muted">
-          This form is validated and ready for a backend or email integration. Nothing has been sent from the
-          website yet — the delivery step is still being connected.
-        </p>
-        <button type="button" className="btn btn--line" onClick={() => setPrepared(false)}>
+        <p className="muted">Your message has reached the studio. You&apos;ll hear back from the person who reads it.</p>
+        <button type="button" className="btn btn--line" onClick={() => setDismissed(true)}>
           <span>Write another message</span>
           <span className="btn__arrow" aria-hidden="true">↗</span>
         </button>
@@ -62,7 +62,10 @@ export function ContactForm() {
   }
 
   return (
-    <form className="form" onSubmit={onSubmit} noValidate>
+    <form className="form" action={action} onSubmit={onSubmit} ref={form} noValidate>
+      {/* hidden from people; bots fill it and are quietly dropped */}
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: "absolute", left: "-9999px" }} />
+
       <div className="form__row">
         <label className="field" data-invalid={errors.name ? "true" : undefined}>
           <span>Name</span>
@@ -100,15 +103,18 @@ export function ContactForm() {
         {errors.message ? <span className="field__error">{errors.message}</span> : null}
       </label>
 
-      <button type="submit" className="btn btn--primary" data-cursor="link">
-        <span>Send message</span>
+      {state.status === "error" ? (
+        <p className="field__error" role="alert">
+          {state.message}
+        </p>
+      ) : null}
+
+      <button type="submit" className="btn btn--primary" data-cursor="link" disabled={pending}>
+        <span>{pending ? "Sending…" : "Send message"}</span>
         <span className="btn__arrow" aria-hidden="true">↗</span>
       </button>
 
-      <p className="form__note">
-        This form is prepared for a future email or backend integration. Submitting it validates and formats
-        your message but does not send it yet.
-      </p>
+      <p className="form__note">Messages go straight to the studio&apos;s inbox and are read by a person.</p>
     </form>
   );
 }

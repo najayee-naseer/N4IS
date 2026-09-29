@@ -1,3 +1,4 @@
+/** Structural constants — the domain and navigation are code, not content. Editable copy lives in Supabase. */
 export const site = {
   name: "N4IS",
   domain: "n4is.business",
@@ -16,26 +17,4 @@ export const navigation = [
   { label: "FOUNDER", href: "/founder", index: "04" },
   { label: "ABOUT", href: "/about", index: "05" },
   { label: "CONTACT", href: "/contact", index: "06" },
-] as const;
-
-/** The words the studio works by — used as a repeating rhythm across pages. */
-export const process = ["IDEAS", "BUILD", "EXPERIMENT", "ENGINEER", "CREATE", "ITERATE", "REAL WORLD"] as const;
-
-export const principles = [
-  {
-    title: "Start with the question",
-    body: "Every project begins as something worth understanding, not as a feature list. The question shapes what gets built.",
-  },
-  {
-    title: "Build to learn",
-    body: "Prototypes are the fastest way to find out whether an idea holds up. The work is written to be tested, not defended.",
-  },
-  {
-    title: "Engineer for the real world",
-    body: "An idea only counts once it survives contact with real constraints — devices, people, networks, budgets, time.",
-  },
-  {
-    title: "Iterate in public",
-    body: "Projects are shown as they are: in development, in prototype, in research. Progress over polish claims.",
-  },
 ] as const;

@@ -2,20 +2,17 @@ import { Fragment } from "react";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionHead } from "@/components/ui/section-head";
 import { ArrowLink } from "@/components/ui/arrow-link";
-import { Specimen } from "@/components/lab/specimen";
-import { experiments } from "@/data/experiments";
+import { LabPlate } from "@/components/lab/lab-plate";
+import type { Experiment } from "@/types/content";
 
 const VOCAB = ["EXPERIMENT", "PROTOTYPE", "RESEARCH", "TEST", "LEARN", "REPEAT"] as const;
 
-export function LabTeaser() {
+export function LabTeaser({ experiments, title, lead }: { experiments: Experiment[]; title: string; lead: string }) {
   return (
     <section className="section section--tight lab-teaser" data-env="lab" aria-labelledby="lab-teaser-title">
       <div className="shell">
-        <SectionHead index="06" label="N4IS Lab" title={<span id="lab-teaser-title">Experiments in progress</span>}>
-          <p className="lead">
-            Work is a product list. The Lab is the room before it — prototypes, studies and open questions
-            that may never become a project, and sometimes do.
-          </p>
+        <SectionHead index="06" label="N4IS Lab" title={<span id="lab-teaser-title">{title}</span>}>
+          {lead ? <p className="lead">{lead}</p> : null}
           <ArrowLink href="/lab">Enter the lab</ArrowLink>
         </SectionHead>
 
@@ -32,7 +29,7 @@ export function LabTeaser() {
           {experiments.map((experiment, index) => (
             <Reveal key={experiment.slug} delay={index * 90}>
               <article className="lab-card">
-                <Specimen index={index} number={experiment.number} />
+                <LabPlate experiment={experiment} index={index} showStatus={false} />
                 <div className="lab-card__body">
                   <p className="label label--accent">
                     {experiment.number} — {experiment.status}

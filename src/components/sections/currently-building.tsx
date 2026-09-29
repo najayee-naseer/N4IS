@@ -2,7 +2,8 @@ import { Reveal } from "@/components/ui/reveal";
 import { SectionHead } from "@/components/ui/section-head";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { ProjectPanel } from "@/components/projects/project-panel";
-import { featuredProjects } from "@/data/projects";
+import { Lines } from "@/components/ui/lines";
+import type { Project } from "@/types/content";
 
 /**
  * Every active project gets a full editorial moment, not a slot in a card
@@ -13,9 +14,9 @@ import { featuredProjects } from "@/data/projects";
  * hardcoded slug, so the section always opens on the strongest visual N4IS
  * actually has.
  */
-export function CurrentlyBuilding() {
-  const lead = featuredProjects.find((project) => project.heroImage) ?? featuredProjects[0];
-  const ordered = lead ? [lead, ...featuredProjects.filter((project) => project !== lead)] : featuredProjects;
+export function CurrentlyBuilding({ projects, title, lead: intro }: { projects: Project[]; title: string; lead: string }) {
+  const lead = projects.find((project) => project.heroImage) ?? projects[0];
+  const ordered = lead ? [lead, ...projects.filter((project) => project !== lead)] : projects;
 
   return (
     <section className="section building" data-env="projects" aria-labelledby="currently-building-title">
@@ -25,16 +26,11 @@ export function CurrentlyBuilding() {
           label="Active projects"
           title={
             <span id="currently-building-title">
-              Currently
-              <br />
-              Building
+              <Lines text={title} />
             </span>
           }
         >
-          <p className="lead">
-            Four projects in active development. Each one is shown as it actually stands — in progress,
-            in prototype, still being shaped.
-          </p>
+          {intro ? <p className="lead">{intro}</p> : null}
           <ArrowLink href="/projects">All work</ArrowLink>
         </SectionHead>
 

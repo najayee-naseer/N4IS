@@ -4,7 +4,7 @@ import { PageHero } from "@/components/ui/page-hero";
 import { Reveal } from "@/components/ui/reveal";
 import { ProjectPanel } from "@/components/projects/project-panel";
 import { CtaBand } from "@/components/sections/cta-band";
-import { activeProjects } from "@/data/projects";
+import { getProjects } from "@/lib/cms/queries";
 
 export const metadata: Metadata = {
   title: "Work",
@@ -12,7 +12,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/projects" },
 };
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const projects = await getProjects();
+
   return (
     <main id="main-content" className="page work-page">
       <Environment station="page" />
@@ -25,7 +27,7 @@ export default function WorkPage() {
           support="A curated archive of the projects currently in active development at N4IS. Each one is shown at its real stage — no finished claims before the work is finished."
         >
           <Reveal className="work-index" variant="fade" delay={200}>
-            {activeProjects.map((project) => (
+            {projects.map((project) => (
               <span key={project.slug}>
                 <b>{project.number}</b>
                 <i className={project.preserveCase ? "no-caps" : undefined}>{project.name}</i>
@@ -36,7 +38,7 @@ export default function WorkPage() {
         </PageHero>
 
         <div className="work-panels section section--tight">
-          {activeProjects.map((project, index) => (
+          {projects.map((project, index) => (
             <Reveal key={project.slug} delay={index * 70}>
               <ProjectPanel project={project} lead={Boolean(project.heroImage)} index={index} />
             </Reveal>

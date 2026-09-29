@@ -1,8 +1,17 @@
 import { Fragment } from "react";
 import { Reveal } from "@/components/ui/reveal";
-import { principles, process } from "@/data/site";
+import { Lines } from "@/components/ui/lines";
+import type { HomepageContent, Pair } from "@/lib/cms/defaults";
 
-export function Definition() {
+export function Definition({
+  content,
+  process,
+  principles,
+}: {
+  content: HomepageContent;
+  process: string[];
+  principles: Pair[];
+}) {
   return (
     <section className="section definition-section" data-env="definition" aria-labelledby="definition-title" id="what-is-n4is">
 
@@ -13,15 +22,12 @@ export function Definition() {
               <span className="label--accent">02</span> Definition
             </p>
             <h2 className="definition__title" id="definition-title">
-              Ideas are only
-              <br />
-              the beginning.
+              <Lines text={content.definitionTitle} />
             </h2>
             <p className="definition__statement">
-              <b>N4IS is an independent technology studio</b>{" "}
-              <span>building digital products, intelligent systems and experiments for a smarter tomorrow.</span>
+              <b>{content.definitionStatementStrong}</b> <span>{content.definitionStatement}</span>
             </p>
-            <p className="lead">Not an agency. Not a portfolio. A studio with its own project list.</p>
+            {content.definitionLead ? <p className="lead">{content.definitionLead}</p> : null}
 
             <div className="definition__order">
               <p className="label">The working order</p>

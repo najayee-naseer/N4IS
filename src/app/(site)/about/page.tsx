@@ -4,7 +4,9 @@ import { Environment } from "@/components/environment/environment";
 import { PageHero } from "@/components/ui/page-hero";
 import { Reveal } from "@/components/ui/reveal";
 import { CtaBand } from "@/components/sections/cta-band";
-import { principles, process } from "@/data/site";
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { getAbout, getSettings } from "@/lib/cms/queries";
 
 export const metadata: Metadata = {
   title: "About",
@@ -12,56 +14,44 @@ export const metadata: Metadata = {
   alternates: { canonical: "/about" },
 };
 
-const STATEMENTS = [
-  [
-    "What N4IS is",
-    "An independent technology studio — a place to explore ideas and turn the strongest ones into real things. It is one practice, not an agency and not a résumé.",
-  ],
-  [
-    "Why it exists",
-    "Because curiosity gets more interesting when it becomes practical. N4IS exists to keep asking what could be built next, and then to actually build it.",
-  ],
-  [
-    "What it builds",
-    "Software, AI systems, web applications, mobile experiences, IoT concepts, and experimental technology — usually more than one of those at once.",
-  ],
-  [
-    "How ideas become projects",
-    "An idea starts in the Lab as a study or prototype. If it survives the questions, it moves into Work with a number, a status and a real scope. Nothing skips that step.",
-  ],
-  [
-    "Technology philosophy",
-    "Start with the question. Learn the constraints. Design the experience. Engineer the system. Keep refining. Technology should earn its place, not announce itself.",
-  ],
-  [
-    "Where it is going",
-    "Forward, one considered experiment and product at a time — with new interactions, connected systems and intelligent tools as the areas worth pushing on.",
-  ],
-] as const;
+export default async function AboutPage() {
+  const [about, settings] = await Promise.all([getAbout(), getSettings()]);
+  if (!about.published) notFound();
+  const { content } = about;
+  const { process, principles } = settings.content;
 
-export default function AboutPage() {
   return (
     <main id="main-content" className="page">
       <Environment station="page" />
 
       <div className="shell" style={{ position: "relative", zIndex: 1 }}>
         <PageHero
-          label="N4IS / Manifesto"
-          title="About"
-          lead="An independent technology studio for ideas that deserve to become real."
-          support="This page is the studio explaining itself: what it is, why it exists, and the order it works in."
+          label={content.label}
+          title={content.title}
+          lead={content.lead}
+          support={content.support}
         />
 
         <Reveal className="about-lede" variant="fade">
           <p className="about-statement">
-            N4IS exists to find out whether an idea holds up.{" "}
-            <span>Everything on this site is the result of following one far enough to know.</span>
+            {content.statement} <span>{content.statementEmphasis}</span>
           </p>
-          <p className="muted">
-            The studio is one practice: the brief, the interface, the system and the decision about when
-            something is honestly finished all happen in the same place.
-          </p>
+          {content.intro ? <p className="muted">{content.intro}</p> : null}
         </Reveal>
+
+        {about.image ? (
+          <Reveal variant="wipe">
+            <figure className="about-figure">
+              <Image
+                src={about.image.src}
+                alt={about.image.alt}
+                width={about.image.width}
+                height={about.image.height}
+                sizes="(max-width: 900px) 100vw, 80vw"
+              />
+            </figure>
+          </Reveal>
+        ) : null}
 
         <Reveal className="chain section--tight" variant="fade">
           {process.map((word, index) => (
@@ -73,7 +63,7 @@ export default function AboutPage() {
         </Reveal>
 
         <section className="statements section section--tight" aria-label="About N4IS">
-          {STATEMENTS.map(([title, body], index) => (
+          {content.statements.map(({ title, body }, index) => (
             <Reveal className="statement" key={title} delay={index * 60}>
               <span className="statement__index">{String(index + 1).padStart(2, "0")}</span>
               <h2>{title}</h2>
@@ -87,7 +77,7 @@ export default function AboutPage() {
             The rules the work follows
           </Reveal>
           <h2 className="h2" id="about-principles" style={{ margin: "1.25rem 0 2rem" }}>
-            How N4IS builds
+            {content.principlesTitle}
           </h2>
           <div className="principles" style={{ marginTop: 0 }}>
             {principles.map((principle, index) => (

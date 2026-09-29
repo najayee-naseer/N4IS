@@ -1,13 +1,36 @@
-import type { Project } from "@/types/content";
+type LegacyProject = {
+  slug: string;
+  number: string;
+  name: string;
+  shortDescription: string;
+  description: string;
+  category: string;
+  year: string;
+  status: "IN DEVELOPMENT" | "BUILT" | "PROTOTYPE";
+  technologies: string[];
+  image: string | null;
+  heroImage: string | null;
+  heroImageWidth?: number;
+  heroImageHeight?: number;
+  gallery?: { src: string; alt: string; caption: string }[];
+  stack?: string[];
+  preserveCase?: boolean;
+  featured: boolean;
+  active: boolean;
+  focus: string[];
+  content: { label: string; title: string; body: string }[];
+};
 
 const section = (label: string, title: string, body: string) => ({ label, title, body });
 
 /**
- * Only projects with `active: true` are surfaced anywhere on the site.
- * STETHOPS is retained below as an archived historical record and is
- * filtered out of every listing, card, link and route.
+ * LEGACY — the project list as it was hardcoded before the CMS.
+ *
+ * Supabase is the source of truth. This file is kept only to (1) seed a new
+ * Supabase project via `npm run cms:seed` and (2) render the site when no
+ * Supabase environment is configured. Delete it once your project is seeded.
  */
-export const projects: Project[] = [
+export const legacyProjects: LegacyProject[] = [
   {
     slug: "appleexpert",
     number: "01",
@@ -239,39 +262,4 @@ export const projects: Project[] = [
       section("FUTURE DIRECTION", "Learn from the physical world.", "The path ahead is about testing the device in real conditions and refining how a device-level signal becomes something someone can act on."),
     ],
   },
-  {
-    slug: "stethops",
-    number: "A-01",
-    name: "STETHOPS",
-    shortDescription: "An archived healthcare software concept.",
-    description: "STETHOPS is an archived software exploration within healthcare. It is not an active N4IS project.",
-    category: "HEALTHCARE / SOFTWARE",
-    year: "ARCHIVED",
-    status: "ARCHIVED",
-    technologies: ["Healthcare", "Software", "UX"],
-    image: null,
-    heroImage: null,
-    featured: false,
-    active: false,
-    focus: [],
-    content: [
-      section("ARCHIVE", "Not an active project.", "This concept is retained only as a historical record and is not part of the active N4IS project list."),
-    ],
-  },
 ];
-
-/** Everything the site renders comes from this list. */
-export const activeProjects = projects.filter((project) => project.active);
-
-export const featuredProjects = activeProjects.filter((project) => project.featured);
-
-export const getProject = (slug: string) => activeProjects.find((project) => project.slug === slug);
-
-export const getProjectNeighbours = (slug: string) => {
-  const index = activeProjects.findIndex((project) => project.slug === slug);
-  if (index === -1) return { previous: null, next: null };
-  return {
-    previous: activeProjects[index - 1] ?? activeProjects[activeProjects.length - 1] ?? null,
-    next: activeProjects[index + 1] ?? activeProjects[0] ?? null,
-  };
-};

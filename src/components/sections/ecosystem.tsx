@@ -1,7 +1,8 @@
 import { Reveal } from "@/components/ui/reveal";
 import { BrandMark } from "@/components/ui/brand-mark";
 import { ProjectVisual } from "@/components/projects/project-visual";
-import { featuredProjects } from "@/data/projects";
+import { Lines } from "@/components/ui/lines";
+import type { Project } from "@/types/content";
 
 const DISCIPLINES = ["AI", "SOFTWARE", "WEB", "MOBILE", "IOT", "EMBEDDED"] as const;
 const NODE_X = [12.5, 37.5, 62.5, 87.5];
@@ -14,7 +15,7 @@ const NODE_X = [12.5, 37.5, 62.5, 87.5];
  * the same interface fragment used everywhere else on the site — real
  * screenshot where one exists, the procedural stage otherwise.
  */
-export function Ecosystem() {
+export function Ecosystem({ projects, title, lead }: { projects: Project[]; title: string; lead: string }) {
   return (
     <section className="section ecosystem-section" data-env="ecosystem" aria-labelledby="ecosystem-title">
       <div className="shell">
@@ -22,14 +23,9 @@ export function Ecosystem() {
           <span className="label--accent">04</span> The N4IS ecosystem
         </p>
         <h2 className="ecosystem__title" id="ecosystem-title">
-          One studio.
-          <br />
-          Several disciplines.
+          <Lines text={title} />
         </h2>
-        <p className="lead ecosystem__lead">
-          N4IS doesn&apos;t build products in isolation. Every project draws on the same practice —
-          software, AI, hardware and design — branching outward from one studio.
-        </p>
+        <p className="lead ecosystem__lead">{lead}</p>
 
         <Reveal className="ecosystem" variant="fade" delay={100}>
           <div className="ecosystem__stage">
@@ -52,7 +48,7 @@ export function Ecosystem() {
             </div>
 
             <div className="ecosystem__nodes">
-              {featuredProjects.map((project) => (
+              {projects.slice(0, 4).map((project) => (
                 <div className="ecosystem__node" key={project.slug}>
                   <div className="ecosystem__node-visual">
                     <ProjectVisual project={project} />

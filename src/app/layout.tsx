@@ -1,10 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { BootScreen } from "@/components/layout/boot-screen";
-import { StudioCursor } from "@/components/layout/studio-cursor";
 import { site } from "@/data/site";
 
 const display = Archivo({
@@ -63,16 +59,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
-      <body>
-        <a className="skip-link" href="#main-content">
-          Skip to content
-        </a>
-        <BootScreen />
-        <StudioCursor />
-        <SiteHeader />
-        {children}
-        <SiteFooter />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
